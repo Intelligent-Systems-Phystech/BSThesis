@@ -1,0 +1,97 @@
+
+
+%%%=== Custom math symbols =====================================================
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\renewcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\mathrm{Var}\;}
+\newcommand{\diam}{\mathrm{diam}\;}
+\newcommand{\conv}{\mathrm{conv}\;}
+\newcommand{\cl}{\mathrm{cl}\;}
+\newcommand{\dist}{\mathbf{dist}}
+\newcommand{\dom}{\mathbf{dom}\;}
+\newcommand{\sign}{\mathbf{sign}\;}
+\renewcommand{\T}{\intercal}
+\newcommand{\eps}{\varepsilon}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\let \oldcmdforall \forall
+\renewcommand{\forall}{\;\oldcmdforall\:}
+\let \oldcmdexists \exists
+\renewcommand{\exists}{\;\oldcmdexists\:}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+% Optimization
+\newcommand{\epi}{\mathbf{epi}}
+\newcommand{\aff}{\mathrm{aff}\;}
+\newcommand{\cone}{\mathrm{cone}\;}
+\newcommand{\cov}{\mathrm{cov}\;}
+\newcommand{\X}{\mathbb{X}}
+
+% Probability
+\newcommand{\expv}{\mathsf{E}\;}
+\newcommand{\disp}{\mathsf{D}\;}
+
+\newcommand{\vold}{\v}
+\renewcommand{\v}[1]{\mathbf{#1}}
+
+\renewcommand{\d}[2]{\frac{d #1}{d #2}}
+\newcommand{\nd}[3]{\frac{d^{#3} #1}{d #2^{#3}}}
+\newcommand{\dd}[2]{\nd{#1}{#2}{2}}
+
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\npd}[3]{\frac{\partial^{#3} #1}{\partial #2^{#3}}}
+\newcommand{\pdd}[2]{\npd{#1}{#2}{2}}
+\newcommand{\divsymb}{\div}
+\renewcommand{\div}{\mathrm{div}\:}
+\newcommand{\grad}{\mathrm{grad}\:}
+\newcommand{\rot}{\mathrm{rot}\:}
+\newcommand{\const}{\,const\,}
+
+% Circled text
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+  \node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+
+% Circled math
+\newcommand{\mcirc}[1]{\circled{$#1$}}
+
+% Fitting braces
+\newcommand{\brs}[1]{\left(#1\right)}
+\newcommand{\sbrs}[1]{\left[#1\right]}
+\newcommand{\fbrs}[1]{\left\{#1\right\}}
+\newcommand{\rbrs}[1]{\left\langle #1 \right\rangle}
+
+\makeatletter
+\newenvironment{sqcases}{%
+  \matrix@check\sqcases\env@sqcases
+}{%
+  \endarray\right.%
+}
+\def\env@sqcases{%
+  \let\@ifnextchar\new@ifnextchar
+  \left\lbrack
+  \def\arraystretch{1.2}%
+  \array{@{}l@{\quad}l@{}}%
+}
+\makeatother
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
