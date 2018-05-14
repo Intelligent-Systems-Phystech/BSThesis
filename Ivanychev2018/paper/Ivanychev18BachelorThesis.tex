@@ -1,6 +1,7 @@
 \documentclass[12pt,fleqn,unicode]{article}
 \usepackage{Diplo}
 \usepackage{tikz}
+\usepackage{mathtools}
 \usetikzlibrary{shapes,arrows,shadows}
 % \usepackage{subcaption}
 \usepackage{subfig}
@@ -142,6 +143,43 @@
 \renewcommand{\eps}{\varepsilon}
 
 
+% Fitting braces
+\newcommand{\brs}[1]{\left(#1\right)}
+\newcommand{\sbrs}[1]{\left[#1\right]}
+\newcommand{\fbrs}[1]{\left\{#1\right\}}
+\newcommand{\rbrs}[1]{\left\langle #1 \right\rangle}
+
+\makeatletter
+\newenvironment{sqcases}{%
+  \matrix@check\sqcases\env@sqcases
+}{%
+  \endarray\right.%
+}
+\def\env@sqcases{%
+  \let\@ifnextchar\new@ifnextchar
+  \left\lbrack
+  \def\arraystretch{1.2}%
+  \array{@{}l@{\quad}l@{}}%
+}
+\makeatother
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+
 \begin{document}
 
 {
@@ -196,7 +234,6 @@
 \section{Введение}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 В работе рассматривается задача классификации временных рядов в задаче
 распознавания действий человека по временным рядам,
 порождаемым датчиками носимых устройств, например, с акселерометра, гироскопа,
@@ -250,6 +287,8 @@
 сегментов оптимальными параметрами аппроксимирующих моделей описан в
 работе~\cite{Karasikov2016}.
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Постановка задачи прогнозирования}
@@ -262,36 +301,43 @@ $$
 S: T \to \R \text{ где } T = \{t_0, t_0 + d, t_0 + 2d \ldots\}, |T| < \infty
 $$
 
-Зададим некоторую ширину сегмента $k \in \N$, тогда объектом $s_i$ мы
+Зададим некоторую ширину сегмента $n \in \N$, тогда объектом $s_i$ мы
 назовем набор
 
 $$
-s_i = s(t_i) = (S(t_i), S(t_i - d), S(t_i - 2d), \ldots, S(t_i - (k - 1)d)) \in \mathfrak{S}
+x_i = s(t_i) = (S(t_i), S(t_i - d), S(t_i - 2d), \ldots, S(t_i - (n - 1)d)),
+\;\; x_i \in X \equiv \R^n
 $$
 
-Необходимо восстановить зависимость $y = f(s), f: \mathfrak{S} \to \{+1, -1\}$.
+\begin{figure}[ht]
+    \caption{Пример сегментов временного ряда с $n=10$.}
+    \centering
+      \includegraphics[width=0.5\textwidth]{../pics/segment_def.png}
+\end{figure}
+
+Необходимо восстановить зависимость $y = f(x), f: X \to \{1, 2, \ldots K\}$.
 Для этого задана обучающая выборка
 
 $$
-\mathfrak{D} = \{ (s_i, y_i) \}_{i=1}^l, \;\;\; y_i \in \{+1, -1\}
+\mathfrak{D} = \{ (x_i, y_i) \}_{i=1}^l, \;\;\; y_i \in \{1, 2, \ldots K\}
 $$
 
-а также функция потерь
+а также функция потерь (multinomial log-loss)
 
-$$
-L(f(s), y)
-$$
+\begin{equation} \label{init_logloss}
+L(f(x_i), y) = \sum_{i=1}^l\sum_{k=1}^K [y_i = k]\log P(y_i = k| x_i, \theta)
+\end{equation}
 
 Таким образом мы решаем задачу оптимизации
 
 $$
-\hat{y} = \arg\min_{y \in Y} \sum_{i = 1}^l L(f(s_i), y_i)
+\hat{\theta} = \arg\min_{\theta \in \Theta} \sum_{i = 1}^l L(f(x_i), y_i)
 $$
 
 \subsection{Комбинированное признаковое описание}
 
-Пусть $\mathfrak{G}$ --- множество функций вида
-$g: \mathfrak{S} \to \R^m$, где $m = m(g)$, то есть это множество отображений
+Пусть $H$ --- множество функций вида
+$h: X \to \R^m$, где $m = m(g)$, то есть это множество отображений
 пространства объектов сложной структуры в пространство действительных чисел
 некоторой размерности (для каждой функции размерность может быть своя). В
 $G$ могут лежать, например
@@ -302,37 +348,51 @@ $G$ могут лежать, например
     \item Множество экспертных оценок каждого из сложных объектов
 \end{itemize}
 
-Возьмем конечный поднабор этих функций $G = [g_1\ldots g_k] \subset \mathfrak{G}$.
+Возьмем конечный поднабор этих функций
+$$
+g = [h_1\ldots h_k], \{h_1\ldots h_k\} \subset H
+$$
+
 Обозначим сумму размерностей образов функций из набора как
 
 $$
-n_G \triangleq \mathrm{dim}(\mathrm{Im}(g_1)) +
-\mathrm{dim}(\mathrm{Im}(g_2)) + \ldots +
-\mathrm{dim}(\mathrm{Im}(g_k))
+n_g \triangleq \mathrm{dim}(\mathrm{Im}(h_1)) +
+\mathrm{dim}(\mathrm{Im}(h_2)) + \ldots +
+\mathrm{dim}(\mathrm{Im}(h_k))
 $$
 
-Тогда $G$ индуцирует отображение $G: \mathfrak{S} \to \Theta \subset \R^{n_G}$,
-причем в векторах образа первые $\mathrm{dim}(\mathrm{Im}(g_1))$ компонент соответствуют
-образу $g_1$, следующие $\mathrm{dim}(\mathrm{Im}(g_2))$ соответствуют $g_2$
-и так далее. $\Theta$ называется \textit{признаковым пространством}
-объектов сложной структуры $\mathfrak{S}$. Тогда, мы можем искать $f$ в семействе
-суперпозиций $h(g(\cdot), \gamma)$, где
+Тогда $g$ индуцирует отображение $g: X \to Z \subset \R^{n_g}$,
+причем в векторах образа первые $\mathrm{dim}(\mathrm{Im}(h_1))$ компонент соответствуют
+образу $g_1$, следующие $\mathrm{dim}(\mathrm{Im}(h_2))$ соответствуют $h_2$
+и так далее. $Z$ называется \textit{признаковым пространством}
+объектов сложной структуры $X$. Тогда, мы можем искать $f$ в семействе
+суперпозиций $a(g(\cdot), \gamma)$, где
+
+$$
+X \xrightarrow{h} Z \xrightarrow{a} Y
+$$
 
 \begin{itemize}
     \item $g$ --- это признаковое отображение
-    \item $h(\cdot, \gamma)$ --- параметрическое отображение $\Theta$ в $\{+1, -1\}$,
-    которое фактически соответствует некоторому алгоритму машинного обучения,
+    \item $a(\cdot, \gamma)$ --- параметрическое отображение $Z$ в $\{1, 2, \ldots K\}$,
+    которое соответствует некоторому алгоритму машинного обучения,
     параметризованного вектором гиперпараметров $\gamma$.
 \end{itemize}
 
-Для отображения из параметрического пространства задана функция ошибки
-$L(h(g(s_i), \gamma), y_i)$, тогда задача разбивается на два этапа:
+% Для отображения из параметрического пространства задана функция ошибки
+% $L(h(g(s_i), \gamma), y_i)$, тогда задача разбивается на два этапа:
+В таком подходе функция потерь \ref{init_logloss} теперь определена
+на отображении $a$, то есть
 
+$$
+L(f(x), y) = L(a(g(x), \gamma), y)
+$$
+
+Итак, задача решается следующим образом:
 
 \begin{itemize}
     \item Поиск и вычисление отображения $X = \{g(\{s_i\}_{i=1}^l), y_i)\}$.
     \item Определение оптимальных парметров $\gamma$ в задаче оптимизации
-
     $$
     \hat{\gamma} = \arg\min_{\gamma} \sum_{i=1}^{l}L(h(x_i, \gamma), y_i)
     $$
@@ -342,6 +402,88 @@ $L(h(g(s_i), \gamma), y_i)$, тогда задача разбивается на
 выборка в признаковом пространстве объектов является простой. В данной работе
 мы рассматриваем, для каких признаковых пространств это допущение справедливо,
 а также предлагаем способы построения таких выборок.
+
+\section{Построение признакового пространства}
+
+В качестве элементов из пространсва функций $H$ мы будем использовать
+локально-аппроксимирующие модели сегментов.
+
+$$
+g(w, x) \in X, \text{ где }w \in \R^{n_g}
+$$
+
+Тогда параметры настроенной модели будут являться образом отображения $h$
+
+$$
+h(x) = \arg\min_{w \in \R^{n_g}} \rho(g(w, x), x)
+$$
+
+Рассмотрим следующие локально-аппроксимирующие модели
+
+\subsection{SEMOR}
+\subsection{AR-авторегрессия}
+
+Является моделью авторегрессии порядка $m$.
+
+$$
+g_{\text{AR}}(w, x) = [\hat{x_1} \ldots \hat{x_n}], \text{ где }
+\hat{x}_i = \begin{cases}
+    x_k & \text{ при } k \in [1, m] \\
+    w_0 + \sum_{i=1}^m w_i x_{k - i} & \text{ при } k \in [m + 1, n]
+\end{cases}
+$$
+
+Оптимальные веса $w$ определяются минимизацией некоторой функции ошибки, например
+MSE
+
+$$
+w_{\text{AR}} = \arg\min_{w \in \R^m} \sum_{i=1}^{n}\norm{x_i - \hat{x_i}}^2
+$$
+
+\subsection{Фурье-модель}
+
+С помощью эмбеддинга построим траекторную матрицу $S$ для сегмента $x \in \R^n$
+
+$$
+S = \begin{pmatrix}
+x_1 & x_2 & \dots & x_m \\
+x_2 & x_3 & \dots & x_{m + 1} \\
+\vdots & \vdots & \ddots & \vdots \\
+x_{n - m + 1} & x_{n - m + 2} & \dots & x_n
+\end{pmatrix}
+$$
+
+Каждая следующая строка траекторной матрицы $S$ получается сдвиганием окна
+длины $m$ в сегменте на единицу. $m$ --- единственный параметр SSE.
+Применяем сингулярное разложение к матрице $X^\intercal X$
+
+$$
+X^\intercal X = VHV^\intercal
+$$
+
+Где $H = \mathrm{diag}(\lambda_1\ldots \lambda_m)$ --- диагональная матрица собственных значений.
+Вектор, образованный этими собственными значениями используются в качестве
+признакового описания сегмента $x$.
+
+$$
+w_{\text{SSA}} = [\lambda_1 \ldots \lambda_m]
+$$
+
+\subsection{Вейвлет-модель}
+
+В качестве аппроксимирующей модели сегмента берем обратное дискретное
+преобразование Фурье,
+то есть признаковым описанием сегмента является прямое дискретное преобразование
+Фурье.
+$$
+    w_{2j} = \mathrm{Re} \sum_{k=1}^{n} x_k \exp\brs{-\frac{2\pi i}{n}kj}, j=1\ldots n
+$$
+$$
+    w_{2j + 1} = \mathrm{Im} \sum_{k=1}^{n} x_k \exp\brs{-\frac{2\pi i}{n}kj}, j=1\ldots n
+$$
+$$
+w_{\text{FFT}} = \sbrs{w_1\ldots w_{2n}}\in \R^{2n}
+$$
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
