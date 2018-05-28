@@ -197,7 +197,7 @@
         Иванычев Сергей Дмитриевич\\[10mm]
     \bf\Large
     Выполнимость гипотезы простоты выборки для комбинированных
-признаковых описаний в задаче классификации временных рядовй\\[10mm]
+признаковых описаний в задаче классификации временных рядов\\[10mm]
     \rm\normalsize
         010900 — Прикладные математика и физика\\[10mm]
     \sc
@@ -538,25 +538,13 @@ $$
 \begin{center}
 \begin{algorithm}[h]
 \caption{Процедура }
-    \label{PLSR_pseudo}
+    \label{pseudo}
 \begin{algorithmic}[1]
-\REQUIRE $\bX, \bY, l$;
-\ENSURE $\bT, \bU, \bP, \bQ$;
+\REQUIRE $\bX, \bY, \bh, l, l_\bh$;
+\ENSURE $\bP, \bI$;
 \STATE инициализировать $\bu := \by_1$ (вектор матрицы $\bY$)
 \FOR{$i=1,\dots, l$}
-  \REPEAT
-    \STATE $\bw := \bX^{\T} \bu / (\bu^{\T} \bu)$
-    \STATE нормировать $\bw$: $\| \bw \| = 1$
-    \STATE $\mathbf{t} := \bX \bw$
-    \STATE $\bc := \bY^{\T} \bt / (\bt^{\T} \bt)$
-    \STATE нормировать $\bc$:  $\| \bc \| = 1$
-    \STATE $\bu := \bY \bc$
-  \UNTIL{$\bt$ не перестанет меняться}
-  \STATE сохранить $\bt$, $\bu$, $\bc$
-  \STATE $\bp := \bX^{\T}\bt/(\bt^{\T}\bt),\ \bq := \bY^{\T}\bu/(\bu^{\T}\bu)$
-  \STATE регрессия ($\bu$ на $\bt$): $\beta := \bu^{\T} \bt / (\bt^{\T} \bt)$
-  \STATE $\bX := \bX - \bt\bt^{\T}\bX/(\bt^{\T}\bt)$
-  \STATE $\bY := \bY - \beta\bt\bc^{\T}$
+
 \ENDFOR
 \end{algorithmic}
 \end{algorithm}
