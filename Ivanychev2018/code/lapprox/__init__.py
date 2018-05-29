@@ -1,0 +1,1 @@
+from .segments.smooth import cubic_smooth

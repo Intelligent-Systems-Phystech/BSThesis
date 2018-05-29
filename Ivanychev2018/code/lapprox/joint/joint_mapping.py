@@ -10,7 +10,6 @@ class JointMapping(sklearn.base.TransformerMixin,
     def __init__(self, models: Dict[str, base.BaseLocalModel]):
         self._models = models
 
-
     def fit(self, X, y=None) -> 'JointMapping':
         for name, model in self._models.items():
             model.fit(X)

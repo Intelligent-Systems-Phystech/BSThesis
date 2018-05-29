@@ -1,3 +1,7 @@
+"""SSA local transformer.
+
+Author: Sergey Ivanychev
+"""
 import numpy as np
 
 

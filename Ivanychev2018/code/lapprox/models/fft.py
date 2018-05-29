@@ -1,3 +1,7 @@
+"""FFT local transformer.
+
+Author: Sergey Ivanychev
+"""
 import numpy as np
 import scipy.fftpack as fftpack
 

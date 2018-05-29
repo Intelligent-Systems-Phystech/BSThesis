@@ -1,3 +1,7 @@
+"""Auto regression local transformer.
+
+Author: Sergey Ivanychev
+"""
 import numpy as np
 import statsmodels.tsa.ar_model as ar_model
 

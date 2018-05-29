@@ -1,3 +1,7 @@
+"""ARMA local transformer.
+
+Author: Sergey Ivanychev
+"""
 import numpy as np
 import statsmodels.tsa.arima_model as arima_model
 

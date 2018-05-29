@@ -46,7 +46,7 @@ def cubic_smooth(segments: Iterable[np.ndarray],
         extrapolate_indices = (output_indices *
                                (segment_indices[-1] / output_indices[-1]))
         extrapolate_indices[-1] = segment_indices[-1]
-        
+
         segments_matrix[idx, :] = f(extrapolate_indices)
 
     return (np.mean(segments_matrix, axis=0),
