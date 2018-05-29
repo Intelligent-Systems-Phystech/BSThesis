@@ -16,13 +16,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="fft.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="fft.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/models/fft.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="3" selection-end-column="3" />
+            <state relative-caret-position="270">
+              <caret line="18" column="71" selection-start-line="18" selection-start-column="71" selection-end-line="18" selection-end-column="71" />
               <folding>
-                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#57#75#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -97,11 +97,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="179">
-              <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
+            <state relative-caret-position="405">
+              <caret line="27" column="38" selection-start-line="27" selection-start-column="38" selection-end-line="27" selection-end-column="38" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -171,8 +171,8 @@
         <option value="$PROJECT_DIR$/models/semor.py" />
         <option value="$PROJECT_DIR$/models/ar.py" />
         <option value="$PROJECT_DIR$/models/arma.py" />
-        <option value="$PROJECT_DIR$/models/fft.py" />
         <option value="$PROJECT_DIR$/models/ssa.py" />
+        <option value="$PROJECT_DIR$/models/fft.py" />
       </list>
     </option>
   </component>
@@ -369,7 +369,7 @@
         <state relative-caret-position="45">
           <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="9" selection-end-column="63" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#57#75#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -466,7 +466,7 @@
         <state relative-caret-position="45">
           <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="9" selection-end-column="63" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#57#75#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -641,16 +641,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/fft.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="3" selection-end-column="3" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/ssa.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -663,10 +653,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/models/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
+        <state relative-caret-position="405">
+          <caret line="27" column="38" selection-start-line="27" selection-start-column="38" selection-end-line="27" selection-end-column="38" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/fft.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="71" selection-start-line="18" selection-start-column="71" selection-end-line="18" selection-end-column="71" />
+          <folding>
+            <element signature="e#57#75#0" expanded="true" />
           </folding>
         </state>
       </provider>
