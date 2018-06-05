@@ -47,7 +47,6 @@ class Semor(base.BaseLocalModel):
 
         # w_3, w_4
         shift, stretch, dist = self._dtw(row)
-        print(f"Shift: {shift}, stretch: {stretch}")
 
         # We now find out which row indices within row will be used for
         # calculating norm of difference between the row and the stretched
@@ -81,7 +80,7 @@ class Semor(base.BaseLocalModel):
         row_part = row_part.flatten()
         shape_part = shape_part.flatten()
 
-        # OK, we  have both row values and shape values. Now we need to find out
+        # OK, we have both row values and shape values. Now we need to find out
         # how we lift and scale the profile.
 
         rgr = sklearn.linear_model.LinearRegression()

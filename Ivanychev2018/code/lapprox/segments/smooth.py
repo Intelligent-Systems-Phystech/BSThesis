@@ -40,6 +40,7 @@ def cubic_smooth(segments: Iterable[np.ndarray],
     output_indices = np.arange(output_length)
 
     for idx, segment in enumerate(segments):
+        # TODO: use normalize module to do this routine.
         segment_indices = np.arange(len(segment))
         f = scipy.interpolate.interp1d(segment_indices, segment, kind='cubic')
 
