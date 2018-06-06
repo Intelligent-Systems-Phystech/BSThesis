@@ -10,11 +10,11 @@ def shrink_segment(segment: np.ndarray, output_length: int) -> np.ndarray:
                                                 segment,
                                                 kind='cubic')
     new_indices = np.linspace(0, segment_indices[-1], output_length)
-    return interpolated_f[new_indices]
+    return interpolated_f(new_indices)
 
 
 def normalize_segments(segments: Iterable[np.ndarray],
-                       length: Optional[int]) -> List[np.ndarray]:
+                       length: Optional[int]=None) -> List[np.ndarray]:
     segments = list(segments)
     length = length if length else min(segment.size for segment in segments)
     return [shrink_segment(segment, length) for segment in segments]
