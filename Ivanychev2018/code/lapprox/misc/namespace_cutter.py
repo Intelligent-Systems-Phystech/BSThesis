@@ -18,8 +18,6 @@ class CutNamespacesTransformer(sklearn.base.TransformerMixin,
         return self
 
     def transform(self, X, y=None):
-        print(self.namespaces)
-        print(self.mapping.namespace_indices)
         per_namespace_indices = tuple(self.mapping.namespace_indices[name]
                                       for name in self.namespaces)
         indices = np.hstack(per_namespace_indices)
