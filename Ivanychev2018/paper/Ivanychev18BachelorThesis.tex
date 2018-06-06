@@ -1,10 +1,11 @@
-\documentclass[12pt,fleqn,unicode]{article}
+\documentclass[12pt, fleqn, unicode]{article}
 \usepackage{Diplo}
 \usepackage{tikz}
 \usepackage{mathtools}
 \usetikzlibrary{shapes,arrows,shadows}
 % \usepackage{subcaption}
 \usepackage{subfig}
+
 
 % \usepackage{graphicx}
 %\usepackage{caption}
@@ -323,7 +324,7 @@ $$
 
 а также функция потерь (multinomial log-loss)
 
-\begin{equation} \label{init_logloss}
+\begin{equation} \label{init-logloss}
 L(f(x_i), y) = \sum_{i=1}^l\sum_{k=1}^K [y_i = k]\log P(y_i = k| x_i, \theta)
 \end{equation}
 
@@ -380,7 +381,7 @@ $$
 
 % Для отображения из параметрического пространства задана функция ошибки
 % $L(h(g(s_i), \gamma), y_i)$, тогда задача разбивается на два этапа:
-В таком подходе функция потерь \ref{init_logloss} теперь определена
+В таком подходе функция потерь теперь определена
 на отображении $a$, то есть
 
 $$
@@ -535,21 +536,98 @@ $$
 
 \section{Алгоритм многоклассовой классификации}
 
+Алгоритм обучения выглядит следующим образом. На выходе мы имеем вектор
+параметров мультиномиальной логистической регрессии.
 
-% \begin{center}
-% \begin{algorithm}[h]
-% \caption{Процедура }
-%     \label{pseudo}
-% \begin{algorithmic}[1]
-% \REQUIRE $\bX, \bY, \bh, l, l_\bh$;
-% \ENSURE $\bP, \bI$;
-% \STATE инициализировать $\bu := \by_1$ (вектор матрицы $\bY$)
-% \FOR{$i=1,\dots, l$}
+\begin{center}
+\begin{algorithm}[h]
+\caption{Алгоритм обучения}
+    \label{learn}
+\begin{algorithmic}[1]
+\REQUIRE $\bX, \bY, \bh, l, l_\bh$;
+\ENSURE $\hat{\theta}$;
+\STATE инициализировать $\bu := \by_1$ (вектор матрицы $\bY$)
+\STATE $\bz = []$
+\FOR{$i=1,\dots, l_\bh$}
+    $\bz[i] := \bh[i](\bX)$
+\ENDFOR
+\STATE инициализировать $\bZ = \bz[1]$
+\FOR{$i=2,\dots, l_\bh$}
+    $\bZ  := (\bZ, \bz[i])$
+\ENDFOR
+\STATE $\hat{\theta} = \arg\min(L(f(Z), Y))$
+\end{algorithmic}
+\end{algorithm}
+\end{center}
 
-% \ENDFOR
-% \end{algorithmic}
-% \end{algorithm}
-% \end{center}
+Применение алгоритма к новым данным выглядит следующим образом.
+
+\begin{center}
+    \begin{algorithm}[h]
+    \caption{Применение алгоритма}
+        \label{apply}
+    \begin{algorithmic}[1]
+    \REQUIRE $\bX, \bh, l, l_\bh, \hat{\theta}$;
+    \ENSURE $\hat{\by}$;
+    \STATE инициализировать $\bu := \by_1$ (вектор матрицы $\bY$)
+    \STATE $\bz = []$
+    \FOR{$i=1,\dots, l_\bh$}
+        \STATE $\bz[i] := \bh[i](\bX)$
+    \ENDFOR
+    \STATE инициализировать $\bZ = \bz[1]$
+    \FOR{$i=2,\dots, l_\bh$}
+        \STATE $\bZ  := (\bZ, \bz[i])$
+    \ENDFOR
+    \STATE инициализировать $\hat{\by}$
+    \FOR{$i=1,\dots, l$}
+        \STATE $\hat{\by}[i] = \arg\max_{k \in K} P(f(\bX[i]) = y_k| \hat{\theta})$
+    \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+\end{center}
+
+\subsection{Выбор моделей локальной аппроксимации}
+
+Базовым алгроритмом для выбора промежуточного пространства параметров является
+минимизация мультиномиального log-loss на кросс-валидации.
+
+$$
+\mathrm{CV}(\mu, \bX, \bY) = \frac{1}{|N|}\sum_{n \in N}Q_{\mu}(X^l_n, X^k_n)
+$$
+
+Для отбора моделей локальной аппроксимации мы будем по очереди включать и выключать
+модель из вектора функций $\bh$.
+
+\begin{center}
+    \begin{algorithm}[h]
+    \caption{Отбор моделей локальной аппроксимации}
+        \label{model_selection}
+    \begin{algorithmic}[1]
+    \REQUIRE $\bX, \bY, \bh_{\mathrm{all}}, l, l_\bh, N$;
+    \ENSURE $\bh_{\mathrm{best}}$;
+
+    \STATE $\bh_{\mathrm{best}} := 0$
+    \STATE $S_{\mathrm{best}} := -\infty$
+    \FOR{$\bh \text{ in } \mathrm{Combinations}(\bh_{\mathrm{all}})$}
+        \STATE $\bs = []$
+        \FOR{$n = 1, \dots, N$}
+            \STATE $\bX_{\mathrm{train}}, \bX_\mathrm{test} = \mathrm{Split}(\bX, n)$
+            \STATE $\bY_{\mathrm{train}}, \bY_\mathrm{test} = \mathrm{Split}(\bY, n)$
+            \STATE $\theta = \mathrm{Learn}(\bX_{\mathrm{train}}, \bY_{\mathrm{train}}, \bh)$
+            \STATE $\bY_\mathrm{predicted} = \mathrm{Predict}(\bX_\mathrm{test}, \bh, \theta)$
+            \STATE $\bs[i] = \mathrm{LogLoss}(\bY_\mathrm{predicted}, \bY_\mathrm{test})$
+        \ENDFOR
+        \STATE $S_{\mathrm{mean}} = \frac{1}{|N|}\sum \bs[i]$
+        \IF{ $S_{\mathrm{best}} < S_{\mathrm{mean}}$ }
+            \STATE $ S_{\mathrm{best}} := S_{\mathrm{mean}} $
+            \STATE $ \bh_{\mathrm{best}} := \bh $
+        \ENDIF
+    \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+\end{center}
+
+\section{Вычислительный эксперимент}
 
 
 

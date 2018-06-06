@@ -1,6 +1,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage[T1,T2A]{fontenc}
 \usepackage[russian]{babel}
 \usepackage{array}
 \usepackage{theorem}
@@ -13,7 +14,7 @@
 \usepackage{color}
 \usepackage[all]{xy}
 
-% Параметры страницы
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \textheight=24cm
 \textwidth=16cm
 \oddsidemargin=0mm
@@ -23,22 +24,22 @@
 \footnotesep=3ex
 \flushbottom
 \tolerance=3000
-\renewcommand{\baselinestretch}{1.4} %для печати с большим интервалом
+\renewcommand{\baselinestretch}{1.4} %пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-% Окружения типа теорем
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 \theorembodyfont{\rmfamily\slshape}
 \theoremstyle{plain}
-\newtheorem{Theorem}{Теорема}[section]
-\newtheorem{Corollary}{Следствие}[Theorem]
-\newtheorem{Lemma}{Лемма}[section]
-\newtheorem{Def}{Определение}[section]
-\newtheorem{State}{Утверждение}[section]
-\newtheorem{Hypothesis}{Гипотеза}[section]
+\newtheorem{Theorem}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅ}[section]
+\newtheorem{Corollary}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}[Theorem]
+\newtheorem{Lemma}{пїЅпїЅпїЅпїЅпїЅ}[section]
+\newtheorem{Def}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}[section]
+\newtheorem{State}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}[section]
+\newtheorem{Hypothesis}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}[section]
 \theorembodyfont{\rmfamily}
-\newtheorem{Example}{Пример}[section]
-\newtheorem{Heuristic}{Эвристика}
-\newtheorem{Remark}{Замечание}[section]
-% Шаманские пляски с бубном, чтобы ставить точку после номера теоремы
+\newtheorem{Example}{пїЅпїЅпїЅпїЅпїЅпїЅ}[section]
+\newtheorem{Heuristic}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}
+\newtheorem{Remark}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}[section]
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \gdef\th@plain{\normalfont
     \def\@begintheorem##1##2{%
         \item[\hskip\labelsep\theorem@headerfont ##1\ ##2.\;]}%
@@ -47,16 +48,16 @@
 }
 
 \newenvironment{Proof}%
-    {\par\noindent{\bf Доказательство.\par\nopagebreak}}%
+    {\par\noindent{\bf пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.\par\nopagebreak}}%
     {\hfill$\scriptstyle\blacksquare$}
 
-% Полезные команды для текста
-\renewcommand{\em}{\it}  % чтобы \em и \emph всегда делали курсив
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+\renewcommand{\em}{\it}  % пїЅпїЅпїЅпїЅпїЅ \em пїЅ \emph пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 \renewcommand\emph[1]{\textit{#1}}
-% перенос знака операции на следующую строку
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 \def\brop#1{#1\discretionary{}{\hbox{$#1$}}{}}
 
-% Полезные команды для математики
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \renewcommand{\geq}{\geqslant}
 \renewcommand{\leq}{\leqslant}
 \newcommand{\ophi}{\phi}
@@ -70,67 +71,67 @@
 \newcommand{\argmax}{\mathop{\rm arg\,max}\limits}
 \newcommand{\sign}{\mathop{\rm sign}\limits}
 
-% готика
+% пїЅпїЅпїЅпїЅпїЅпїЅ
 \def\RR{\mathbb{R}}
 \def\DD{\mathbb{D}}
 \def\fF{\mathfrak{F}}
 \def\fI{\mathfrak{I}}
 \def\fM{\mathfrak{M}}
 
-% теория вероятностей
+% пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \newcommand{\erf}{\myop{erf}}
 \newcommand{\Expect}{\mathsf{E}}
 \newcommand{\Var}{\mathsf{D}}
 \newcommand\Normal{\mathcal{N}}
 \newcommand{\cond}{\mspace{3mu}{|}\mspace{3mu}}
 
-% Рисование нейронных сетей и диаграмм
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \newenvironment{network}%
     {\begin{xy}<0.9ex,0ex>:}%
     {\end{xy}}
 \def\nnNode[#1](#2)#3{\POS(#2)*#3="#1"}
 \def\nnLink[#1,#2]#3{\POS"#1"\ar #3 "#2"}
 
-%% Русификация оформления алгоритмов в пакетах algorithm, algorithmic
+%% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ algorithm, algorithmic
 %%\definecolor{KwColor}{rgb}{0,0,0.9}
 %%\newcommand{\algKeyword}[1]{\textbf{\color{KwColor} #1}}
 %\newcommand{\algKeyword}[1]{\textbf{#1}}
-%\renewcommand{\algorithmicrequire}{\rule{0pt}{2.5ex}\algKeyword{Вход:}}
-%\renewcommand{\algorithmicensure}{\algKeyword{Выход:}}
-%\renewcommand{\algorithmicend}{\algKeyword{конец}}
-%\renewcommand{\algorithmicif}{\algKeyword{если}}
-%\renewcommand{\algorithmicthen}{\algKeyword{то}}
-%\renewcommand{\algorithmicelse}{\algKeyword{иначе}}
+%\renewcommand{\algorithmicrequire}{\rule{0pt}{2.5ex}\algKeyword{пїЅпїЅпїЅпїЅ:}}
+%\renewcommand{\algorithmicensure}{\algKeyword{пїЅпїЅпїЅпїЅпїЅ:}}
+%\renewcommand{\algorithmicend}{\algKeyword{пїЅпїЅпїЅпїЅпїЅ}}
+%\renewcommand{\algorithmicif}{\algKeyword{пїЅпїЅпїЅпїЅ}}
+%\renewcommand{\algorithmicthen}{\algKeyword{пїЅпїЅ}}
+%\renewcommand{\algorithmicelse}{\algKeyword{пїЅпїЅпїЅпїЅпїЅ}}
 %\renewcommand{\algorithmicelsif}{\algorithmicelse\ \algorithmicif}
 %\renewcommand{\algorithmicendif}{\algorithmicend\ \algorithmicif}
-%\renewcommand{\algorithmicfor}{\algKeyword{для}}
-%\renewcommand{\algorithmicforall}{\algKeyword{для всех}}
+%\renewcommand{\algorithmicfor}{\algKeyword{пїЅпїЅпїЅ}}
+%\renewcommand{\algorithmicforall}{\algKeyword{пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ}}
 %\renewcommand{\algorithmicdo}{}
 %\renewcommand{\algorithmicendfor}{\algorithmicend\ \algorithmicfor}
-%\renewcommand{\algorithmicwhile}{\algKeyword{пока}}
+%\renewcommand{\algorithmicwhile}{\algKeyword{пїЅпїЅпїЅпїЅ}}
 %\renewcommand{\algorithmicendwhile}{\algorithmicend\ \algorithmicwhile}
-%\renewcommand{\algorithmicloop}{\algKeyword{цикл}}
+%\renewcommand{\algorithmicloop}{\algKeyword{пїЅпїЅпїЅпїЅ}}
 %\renewcommand{\algorithmicendloop}{\algorithmicend\ \algorithmicloop}
-%\renewcommand{\algorithmicrepeat}{\algKeyword{повторять}}
-%\renewcommand{\algorithmicuntil}{\algKeyword{пока}}
+%\renewcommand{\algorithmicrepeat}{\algKeyword{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}}
+%\renewcommand{\algorithmicuntil}{\algKeyword{пїЅпїЅпїЅпїЅ}}
 %\renewcommand{\algorithmiccomment}[1]{{\footnotesize // #1}}
 %\renewcommand{\algorithmiccomment}[1]{{\quad--- #1}}
-%\renewcommand{\listalgorithmname}{Список алгоритмов}
-% Мои дополнительные команды для описания алгоритмов
+%\renewcommand{\listalgorithmname}{пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}
+% пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 %\newcommand{\BEGIN}{\\[1ex]\hrule\vskip 1ex}
-%\newcommand{\PARAMS}{\renewcommand{\algorithmicrequire}{\algKeyword{Параметры:}}\REQUIRE}
+%\newcommand{\PARAMS}{\renewcommand{\algorithmicrequire}{\algKeyword{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:}}\REQUIRE}
 %\newcommand{\END}{\vskip 1ex\hrule\vskip 1ex}
-%\newcommand{\vkReturn}{\algKeyword{вернуть} }
+%\newcommand{\vkReturn}{\algKeyword{пїЅпїЅпїЅпїЅпїЅпїЅпїЅ} }
 %\newcommand{\RET}{\STATE\vkReturn}
-%\newcommand{\EXIT}{\STATE\algKeyword{выход}}
-%\newcommand{\CONTINUE}{\STATE\algKeyword{следующий} }
+%\newcommand{\EXIT}{\STATE\algKeyword{пїЅпїЅпїЅпїЅпїЅ}}
+%\newcommand{\CONTINUE}{\STATE\algKeyword{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ} }
 %\newcommand{\IFTHEN}[1]{\STATE\algorithmicif\ #1 {\algorithmicthen}}
 %\newcommand{\vkProcedure}[1]{{\tt #1}}
 %\newcommand{\vkProc}[1]{\text{\tt #1}}
-%\newcommand{\PROCEDURE}[1]{\medskip\STATE\algKeyword{ПРОЦЕДУРА} \vkProcedure{#1}}
-%\floatname{algorithm}{Алгоритм}
+%\newcommand{\PROCEDURE}[1]{\medskip\STATE\algKeyword{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ} \vkProcedure{#1}}
+%\floatname{algorithm}{пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ}
 %\floatplacement{algorithm}{!t}
-% чтобы поставить точечку после номера алгоритма в \caption:
+% пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ \caption:
 %\renewcommand\floatc@ruled[2]{\vskip2pt{\@fs@cfont #1.} #2\par}
 
 
@@ -140,7 +141,7 @@
 
 
 
-% Переопределение колонтитулов
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \def\MYheadfoot{
 \renewcommand{\@oddfoot}{}
 \renewcommand{\@oddhead}{\hfil-- \thepage\ --\hfil}
@@ -148,11 +149,11 @@
 \renewcommand{\@evenhead}{\hfil-- \thepage\ --\hfil}
 } \MYheadfoot
 
-% Нумерацию формул переподчиним разделам
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \@addtoreset{equation}{section}
 \def\theequation{\thesection.\arabic{equation}}
 
-% Стили параграфов
+% пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \renewcommand\section{\@startsection{section}{1}{\z@}%
     {3.5ex \@plus 1ex \@minus .2ex}%
     {2.3ex \@plus.2ex}%
@@ -166,32 +167,32 @@
     {1.5ex \@plus .2ex}%
     {\normalfont\normalsize\sffamily\bfseries}}
 
-% Плавающие иллюстрации
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \setcounter{topnumber}{9}
 \setcounter{totalnumber}{9}
 \renewcommand\topfraction{1.0}
-\renewcommand\textfraction{0.0}  % чтобы иллюстрации не улетали в конец документа
-\renewcommand\floatpagefraction{0.01} % float-страниц быть вообще не должно - это чтобы их лучше видеть ;)
+\renewcommand\textfraction{0.0}  % пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+\renewcommand\floatpagefraction{0.01} % float-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ ;)
 \setlength\floatsep{2ex}
 \setlength\textfloatsep{2.5ex}
 \setlength\intextsep{2.5ex}
 \setlength\abovecaptionskip{2ex}
 
-% Нумерованный перечень со скобками
+% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \def\afterlabel#1{\renewcommand\labelenumi{\theenumi #1}}
 \def\aroundlabel#1#2{\renewcommand\labelenumi{#1\theenumi #2}}
 \newenvironment{enumerate*}
 {%
     \begingroup
     \renewcommand{\@listi}{%
-        \topsep=\smallskipamount % вокруг списка
-        \parsep=0pt% между абзацами внутри пункта
-        \parskip=0pt% между абзацами
-        \itemsep=0pt% между пунктами
-        \itemindent=0pt% абзацный выступ
-        \labelsep=1.5ex% расстояние до метки
-        \leftmargin=24pt% отступ слева
-        \rightmargin=0pt} % отступ справа
+        \topsep=\smallskipamount % пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        \parsep=0pt% пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        \parskip=0pt% пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        \itemsep=0pt% пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        \itemindent=0pt% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        \labelsep=1.5ex% пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+        \leftmargin=24pt% пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+        \rightmargin=0pt} % пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     \begin{enumerate}%
     \afterlabel)%
 }{%
@@ -199,6 +200,6 @@
     \endgroup
 }
 
-% Для таблиц: невидимая вертикальная линейка немного расширяет заголовок
+% пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 \newcommand{\hstrut}{\rule{0pt}{2.5ex}}
 \newcommand{\headline}{\hline\hstrut}
