@@ -1,4 +1,8 @@
 import datetime
+import itertools
+
+from typing import List
+
 
 import numpy as np
 import pandas as pd
@@ -22,3 +26,9 @@ def array_to_date_indexed_df(x: np.ndarray) -> pd.DataFrame:
     index = pd.date_range(start=start, freq='H', periods=len(x), name="time")
     df = pd.DataFrame(x, index=index, columns=["values"])
     return df
+
+
+def all_combinations(lst: List):
+    comb_generator = itertools.chain.from_iterable(
+        itertools.combinations(lst, size) for size in range(1, len(lst)))
+    return list(comb_generator)

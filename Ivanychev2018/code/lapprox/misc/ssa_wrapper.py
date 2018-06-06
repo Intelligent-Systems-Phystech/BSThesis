@@ -23,4 +23,4 @@ class SSA(object):
         res = self.ssa.view_reconstruction(*[self.ssa.Xs[i] for i in range(rank)],
                                              names=range(rank),
                                              return_df=True, plot=False)
-        return res.as_matrix().flatten()
+        return res.values.flatten()
