@@ -14,17 +14,21 @@ import sklearn.linear_model
 
 from . import base
 
+def _default_norm(x, y):
+    return np.linalg.norm(x - y, ord=1)
+
 
 class Semor(base.BaseLocalModel):
     def __init__(self, shape: np.ndarray,
-                 dist: Optional[Callable[[float, float], float]]) -> None:
+                 dist: Optional[Callable[[float, float], float]]=None) -> None:
         """Self-Modeling Regression.
 
         :param shape: np.ndarray. The shape (time series profile) array which is
             being compared against.
         :param dist: The distance function in the DTW algorithm.
         """
-        self._dist = dist if dist else lambda x, y: np.linalg.norm(x - y, ord=1)
+        base.BaseLocalModel.__init__(self, dist)
+        self._dist = dist if dist else _default_norm
         self._shape = shape.reshape((-1, 1))
 
     def _dtw(self, row: np.ndarray) -> Tuple[float, float, float]:
@@ -32,13 +36,16 @@ class Semor(base.BaseLocalModel):
 
         # Counting how many times we don't start going up.
         zeros = itertools.takewhile(lambda x: not x, path[1])
-        print(f"Path[1]: {path[1]}")
         zeros_count = len(list(zeros))
         bottom_idx = zeros_count - 1
 
         # Finding out when we reached the top.
-        top_idx = np.where(path[1] == len(self._shape) - 1)[0][0]
+        top_idx_in_path = np.where(path[1] == len(self._shape) - 1)[0][0]
+        top_idx = path[0][top_idx_in_path]
+
         decline = (top_idx - bottom_idx + 1) / float(len(self._shape))
+        # print(list(zip(*path)))
+        # print(f"{decline} = ({top_idx} - {bottom_idx} + 1) / {float(len(self._shape))}")
 
         return float(bottom_idx), decline, dist
 
@@ -75,6 +82,11 @@ class Semor(base.BaseLocalModel):
             x = np.arange(len(row))
             y = row.reshape((-1,))
             interpolated_row = scipy.interpolate.interp1d(x, y, kind='cubic')
+            # print(len(self._shape), len(row))
+            # print(f"Stretch: {stretch}, shift: {shift}")
+            # print(x)
+            # print("!!!")
+            # print(times)
 
             row_part = interpolated_row(times)
         row_part = row_part.flatten()

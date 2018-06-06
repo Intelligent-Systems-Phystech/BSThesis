@@ -11,6 +11,7 @@ from . import base
 
 class Ar(base.BaseLocalModel):
     def __init__(self, degree: int) -> None:
+        base.BaseLocalModel.__init__(self)
         self._degree = degree
 
     def fit_row(self, row: np.ndarray) -> base.ApproxAndParams:

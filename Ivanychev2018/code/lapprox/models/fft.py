@@ -9,6 +9,7 @@ from . import base
 
 class Fft(base.BaseLocalModel):
     def __init__(self, n_harmonics: int) -> None:
+        base.BaseLocalModel.__init__(self, n_harmonics)
         self._n_harmonics = n_harmonics
         pass
     

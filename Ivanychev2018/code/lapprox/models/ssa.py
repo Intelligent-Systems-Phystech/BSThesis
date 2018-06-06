@@ -11,6 +11,7 @@ from ..misc import ssa_wrapper
 
 class Ssa(base.BaseLocalModel):
     def __init__(self, lag: int):
+        base.BaseLocalModel.__init__(self, lag)
         self._lag = lag
 
     def fit_row(self, row: np.ndarray) -> base.ApproxAndParams:

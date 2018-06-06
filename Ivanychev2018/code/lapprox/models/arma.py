@@ -9,6 +9,7 @@ from . import base
 
 class Arma(base.BaseLocalModel):
     def __init__(self, p: int, q: int) -> None:
+        base.BaseLocalModel.__init__(self, p, q)
         self._p = p
         self._q = q
 
