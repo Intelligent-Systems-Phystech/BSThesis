@@ -1,16 +1,77 @@
 \documentclass{beamer}
     \usepackage[utf8]{inputenc}
     \usepackage[russian]{babel}
-    \usepackage{amsmath,mathrsfs,mathtext}
+    \usepackage{amsmath, mathrsfs, mathtext}
+    \usepackage{amsfonts}
     \usepackage{graphicx, epsfig}
     \usetheme{Warsaw}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
     \usecolortheme{sidebartab}
     \usepackage{bbm}
+    \newcommand{\bz}{\mathbf{z}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\ba}{\mathbf{a}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\bp}{\mathbf{p}}
+\newcommand{\bq}{\mathbf{q}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bg}{\mathbf{g}}
+\newcommand{\bh}{\mathbf{h}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\be}{\mathbf{e}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bT}{\mathbf{T}}
+\newcommand{\bQ}{\mathbf{Q}}
+\newcommand{\bE}{\mathbf{E}}
+\newcommand{\bF}{\mathbf{F}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bB}{\mathbf{B}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\bD}{\mathbf{D}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\bG}{\mathbf{G}}
+\newcommand{\bS}{\mathbf{S}}
+\newcommand{\bZ}{\mathbf{Z}}
+\newcommand{\bJ}{\mathbf{J}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bPsi}{\boldsymbol{\Psi}}
+\newcommand{\bchi}{\boldsymbol{\chi}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\bTheta}{\boldsymbol{\Theta}}
+\newcommand{\bphi}{\boldsymbol{\phi}}
+\newcommand{\bdelta}{\boldsymbol{\delta}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\renewcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\mathrm{Var}\;}
+\newcommand{\diam}{\mathrm{diam}\;}
+\newcommand{\conv}{\mathrm{conv}\;}
+\newcommand{\cl}{\mathrm{cl}\;}
+\newcommand{\dist}{\mathbf{dist}}
+\newcommand{\dom}{\mathbf{dom}\;}
+\newcommand{\sign}{\mathbf{sign}\;}
+\newcommand{\T}{\intercal}
+\newcommand{\eps}{\varepsilon}
     \DeclareMathOperator*{\argmin}{arg\,min}
     \definecolor{beamer@blendedblue}{RGB}{15,120,80}
     %----------------------------------------------------------------------------------------------------------
-    \title[\hbox to 56mm{Построение суперпозиций\hfill\insertframenumber\,/\,\inserttotalframenumber}]
-    {Построение суперпозиций \\ для прогнозирования временных рядов}
+    \title[\hbox to 56mm{Ансамбль локальных аппроксимаций\hfill\insertframenumber\,/\,\inserttotalframenumber}]
+    {Выбор оптимальных моделей локальной аппроксимации\\ для классификации временных рядов}
     \author[С.\,Д. Иванычев]{\large \\Сергей Дмитриевич Иванычев}
     \institute{\tiny
         Московский физико-технический институт\\
@@ -35,29 +96,125 @@
 
     \vspace{3 mm}
     \begin{block}{\bf Задача}
-    Выбор оптимальной прогностической системы моделей для краткосрочного прогнозирования объемов железнодорожных грузовых перевозок.\end{block}
-    \begin{block}{\bf Цель}
-    Построение прогностической модели, способной описывать временные ряды с асимметрично распределённым шумом.
+        Сегментация и классификация временного ряда, генерируемого линейным
+        акселерометром носимого устройства, по типам движения.
     \end{block}
     \vspace{3 mm}
-    \begin{block}{\bf Предложение}
-    Использовать суперпозиции двух моделей.
+    \begin{block}{\bf Цель}
+   Предложить способ построения набора локально аппроксимирующих моделей
+   для устойчивой классификации сигналов носимых устройств.
+    \end{block}
+    \vspace{3 mm}
+    \begin{block}{\bf Гипотеза}
+    Суперпозиция локально аппроксимирующих моделей доставляет более высокое
+    качество при меньшей сложности чем универсальные модели
     \end{block}
 
     \end{frame}
 
     % %----------------------------------------------------------------------------------------------------------
+\begin{frame}{Цель исследования}
 
-    % \begin{frame}{Литература}
-    % \begin{itemize}
-    % \item Журавлев Ю.~И., Рудаков К.~В., Корчагин А.~Д., Кузнецов М.~П., Мотренко А.~П., Стенина М.~М., Стрижов В.~В. Методы прогнозирования временных рядов на примере железнодорожных грузоперевозок // Вестник Российской академии наук. 2016.
-    % \item А.П.~Мотренко, М.М.~Стенина, К.В.~Рудаков, М.П.~Кузнецов. Выбор оптимальной модели прогнозирования объёмов грузовых железнодорожных перевозок. 2015.
-    % \item Н.Э.~Голяндина. Метод <<Гусеница>>-SSA: прогноз временных рядов, 2004.
+    \vspace{3 mm}
+    \begin{block}{\bf Прямая задача}
+        Требуется выбрать такой набор моделей локальной аппроксимации, что
+        порождающая выборка в промежуточном пространстве является \textit{простой}.
+    \end{block}
+    \vspace{3 mm}
+    \begin{block}{\bf Обратная задача}
+        Оптимизировать структурные параметры выбираемых моделей по порождающей выьборке
+        с целью получения выборки с оптимальными свойствами.
+    \end{block}
 
-    % \end{itemize}
-    % \end{frame}
+\end{frame}
+
+     % %----------------------------------------------------------------------------------------------------------
+
+    \begin{frame}{Литература}
+    \begin{itemize}
+
+    \item Кузнецов М.~П., Ивкин Н.~П., Алгоритм классификации временных рядов акселерометра по комбинированному признаковому описанию, 2015
+    \item Карасиковa М.~Е., Стрижов В.~В. Классификация временных рядов в пространстве параметров порождающих моделей, 2016
+
+    \end{itemize}
+    \end{frame}
 
     % %----------------------------------------------------------------------------------------------------------
+
+
+
+\begin{frame}{Определения}
+    \begin{block}{\textbf{Определение}: Временной ряд}
+    $$
+    S: T \to \R \text{ где } T = \{t_0, t_0 + d, t_0 + 2d \ldots\}, |T| < \infty
+    $$
+    \end{block}
+    \begin{block}{\textbf{Определение}: Сегмент временного ряда}
+    При заданной ширине сегмента и метке времени это вектор
+    $$
+    \bx_i  = (S(t_i), S(t_i - d), S(t_i - 2d), \ldots, S(t_i - (n - 1)d)),
+\;\; \bx_i \in X \equiv \R^n
+    $$
+    \end{block}
+    \begin{block}{\textbf{Определение}: Локально аппроксимирующая модель}
+        $$
+        g_i(w, x) \in X, \text{ где }w \in \R^{n_g}
+        $$
+        Тогда оптимальные параметры будут являться образом
+        $$
+        \bh_i(x) = \arg\min_{w \in \R^{n_g}} \rho(g(w, x), x)
+        $$
+        $\bh_i$ — локально аппроксимирующая модель сегмента.
+    \end{block}
+
+\end{frame}
+
+    % %----------------------------------------------------------------------------------------------------------
+
+
+\begin{frame}{Постановка задачи}
+    \begin{block}{Дано}
+        $\bX$ — набор сегментов данных акселерометра
+
+        $\by$ — метки классов движения (бег, ходьба, подъем и спуск по лестнице)
+
+        $\bh$ — конечный набор моделей локальной аппроксимации.
+    \end{block}
+    $\bh$ отображает пространство сегментов $\bX$ в
+    \textit{промежуточное пространство} признаковых описаний $\bZ$.
+    \begin{block}{Алгоритм классификации}
+        $$
+        T \rightarrow \bX \xrightarrow{\bh} \bZ \xrightarrow{a} Y
+        $$
+
+        Где $\bh$ набор моделей локальной аппроксимации, $a(\cdot, \gamma)$ —
+        алгоритм многоклассовой классификации.
+    \end{block}
+\end{frame}
+
+    % %----------------------------------------------------------------------------------------------------------
+
+
+    \begin{frame}{Построение промежуточного пространства}
+        \begin{block}{Локально-аппроксимирующие модели}
+        \begin{center}
+            \begin{tabular}{| l | r |}
+                Модель & Структурные параметры \\
+                \hline \\
+                SEMOR & - \\
+                AR-авторегрессия & порядок \\
+                Фурье-модель FFT & количество главных частот \\
+                Вейвлет-модель SSE & количество сингулярных чисел\\
+                \hline
+              \end{tabular}
+        \end{center}
+        \end{block}
+
+        Выбранные модели порождают промежуточное пространство $\bZ$
+        $$
+        [\bh_1\ldots \bh_k]: x \mapsto [w_1^* \ldots w_k^*]
+        $$
+    \end{frame}
 
     % \begin{frame}{Постановка задачи}
     % \begin{block}{\bf Задача ретроспективного прогноза}
