@@ -13,6 +13,9 @@
 \usepackage{indentfirst}
 \usepackage{pdfpages}
 \usepackage{subfig}
+\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{mwe} % For dummy images
 \usetheme{Warsaw}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
 \usecolortheme{sidebartab}
 \definecolor{beamer@blendedblue}{RGB}{20,100,100}
@@ -54,6 +57,7 @@
 \date{\footnotesize{МФТИ, 13 июня 2018}}
 
 \bibliographystyle{unsrt}
+
 
 %----------------------------------------------------------------------------------------------------------
 \begin{document}
@@ -111,33 +115,42 @@ $\ba_i, \bb_i$ --- последовательности векторов сло�
 $$L_\DD(\by,\DD, \bbf,\bw) = \log\PP(\by|\DD,\bw,\bbf) = \sum_{(\ba,\bb,y)\in\DD} \log\PP(y|\ba,\bb,\bw,\bbf)$$
 Оптимальная модель $\bbf$ находится максимизацией логарифма правдоподобия модели $L_\bbf(\by,\DD,\bbf)$:
 $$L_\bbf(\by,\DD,\bbf) = \log \PP(\by|\DD,\bbf) = \log \int_{\bw}\PP(\by|\DD,\bw)\PP(\bw|\bbf)d\bw$$
-Введём априорное и апостериорные распределения вектора параметров:
+
+%Введём априорное и апостериорные распределения вектора параметров:
+Априорное и апостериорное распределения параметров будем считать нормальными:
 $$\PP(\bw|\bbf) \sim N(\bmuo,\bAo), \ \PP(\bw|\by,\DD,\bbf) \sim N(\bmut,\bAt)$$
 
 \end{frame}
 
-\begin{frame}{Постановка задачи}
+\begin{frame}{Вариационная нижняя оценка}
 Рассмотрим вариационную нижнюю оценку $L_\bbf(\by,\DD,\bbf)$, полученную из неравенства Йенсена:
 \begin{align*}
-&L_\bbf(\by,\DD,\bbf)= \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf)d\bw \geq\\&\geq-\DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))+\\
-&+ \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf,\bw)d\bw = -L(\by,\DD,\bbf,\bw)
+%&L_\bbf(\by,\DD,\bbf)= \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf)d\bw \geq\\&\geq-\DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))+\\
+%&+ \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf,\bw)d\bw = -L(\by,\DD,\bbf,\bw)
+&L_\bbf(\by,\DD,\bbf)= \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf)d\bw \geq\\&\geq-\DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))+ \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf,\bw)d\bw
 \end{align*}
-Первое слагаемое назовём сложностью модели $L_\bw(\DD,\bbf)$:
-$$L_\bw(\DD,\bbf) = \DKL(N(\bmut,\bAt)||N(\bmuo,\bAo)) $$
-Второе слагаемое формулы является матожиданием правдоподобия выборки:
-$$L_E(\by,\DD,\bbf,\bw) = \mathsf{E}_{\bw\sim N(\bmut,\bAt)}L_\DD(\by,\DD, \bbf,\bw) $$
-
-\end{frame}
-
-\begin{frame}{Постановка задачи}
-	
+%Первое слагаемое назовём сложностью модели $L_\bw(\DD,\bbf)$:
+%$$L_\bw(\DD,\bbf) = \DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))$$
+Обозначим за $L_\bw(\DD,\bbf)$ и $L_E(\by,\DD,\bbf,\bw)$ первое и второе слагаемые со знаком минус:
+$$L_\bw(\DD,\bbf) = \DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))$$
+$$L_E(\by,\DD,\bbf,\bw) = -\mathsf{E}_{\bw\sim N(\bmut,\bAt)}L_\DD(\by,\DD, \bbf,\bw)$$
+% Второе слагаемое формулы является матожиданием правдоподобия выборки:
+% $$L_E(\by,\DD,\bbf,\bw) = \mathsf{E}_{\bw\sim N(\bmut,\bAt)}L_\DD(\by,\DD, \bbf,\bw) $$
 Искомая модель $\bbf$ минимизирует суммарную функцию потерь
-$$\bbf = \text{argmin}_{\bbf \in \FFF}L(\by,\DD,\bbf,\bw)$$
-где 
-$$L(\by,\DD,\bbf,\bw) = L_E(\by,\DD,\bbf,\bw) + L_\bw(\DD,\bbf,\bw),$$
-$L_E(\by,\DD,\bbf,\bw)$ --- матожидание правдоподобия выборки, $L_\bw(\DD,\bbf,\bw)$ --- сложность модели.
+$$\bbf = \text{argmin}_{\bbf \in \FFF}L(\by,\DD,\bbf,\bw)$$%, \text{где}$$
+$$L(\by,\DD,\bbf,\bw) = L_E(\by,\DD,\bbf,\bw) + L_\bw(\DD,\bbf,\bw)$$
 
 \end{frame}
+
+%\begin{frame}{Постановка задачи}
+%	
+%Искомая модель $\bbf$ минимизирует суммарную функцию потерь
+%$$\bbf = \text{argmin}_{\bbf \in \FFF}L(\by,\DD,\bbf,\bw)$$
+%где 
+%$$L(\by,\DD,\bbf,\bw) = L_E(\by,\DD,\bbf,\bw) + L_\bw(\DD,\bbf,\bw),$$
+%$L_E(\by,\DD,\bbf,\bw)$ --- матожидание правдоподобия выборки, $L_\bw(\DD,\bbf,\bw)$ --- сложность модели.
+%
+%\end{frame}
 
 \begin{frame}{Предлагаемое решение}
 
@@ -154,26 +167,26 @@ $$L_E(\by,\DD,\bbf,\bw) \approx \frac1S\sum\limits_{k=1}^S L_\DD(\by,\DD, \bbf,\
 
 \end{frame}
 
-\begin{frame}{Предлагаемое решение}
+%\begin{frame}{Предлагаемое решение}
+%
+%%\begin{enumerate}
+%Скалярные дисперсии и априорный вектор средних: $\bAo = \sigma\II , \ \bAt = \beta \II , \ \bmuo = \mu, \ \bmut = \bm$.
+%
+%Находим $L_\bw(\DD,\bbf,\bw) = \sum\limits_{i=1}^W(\log\frac{\sigma}{\beta} + \frac{(\mu-m_i)^2 + \beta^2 + \sigma^2}{2\sigma^2})$
+%
+%Необходимые условия экстремума:
+%
+%$\frac\partial{\partial\mu}\DKL = \sum\limits_{i=1}^W\frac{\mu-m_i}{\sigma^2}=0 \Rightarrow \hat{\mu} = \frac1W\sum\limits_{i=1}^W m_i$.
+%
+%$\frac\partial{\partial\sigma^2}\DKL = \sum\limits_{i=1}^W \frac1{2\sigma^2}-\frac{(\mu-m_i)^2 + \beta^2}{2\sigma^4}=0 \ \Rightarrow \ \hat{\sigma}^2 = \frac1W\sum\limits_{i=1}^W (\mu-m_i)^2 + \beta^2$.
+%
+%%\end{enumerate}
+%
+%\end{frame}
 
-%\begin{enumerate}
-Скалярные дисперсии и априорный вектор средних: $\bAo = \sigma\II , \ \bAt = \beta \II , \ \bmuo = \mu, \ \bmut = \bm$.
+\begin{frame}{Обновление параметров распределений}
 
-Находим $L_\bw(\DD,\bbf,\bw) = \sum\limits_{i=1}^W(\log\frac{\sigma}{\beta} + \frac{(\mu-m_i)^2 + \beta^2 + \sigma^2}{2\sigma^2})$
-
-Необходимые условия экстремума:
-
-$\frac\partial{\partial\mu}\DKL = \sum\limits_{i=1}^W\frac{\mu-m_i}{\sigma^2}=0 \Rightarrow \hat{\mu} = \frac1W\sum\limits_{i=1}^W m_i$.
-
-$\frac\partial{\partial\sigma^2}\DKL = \sum\limits_{i=1}^W \frac1{2\sigma^2}-\frac{(\mu-m_i)^2 + \beta^2}{2\sigma^4}=0 \ \Rightarrow \ \hat{\sigma}^2 = \frac1W\sum\limits_{i=1}^W (\mu-m_i)^2 + \beta^2$.
-
-%\end{enumerate}
-
-\end{frame}
-
-\begin{frame}{Предлагаемое решение}
-
-Скалярные априорная дисперсия и вектор средних, апостериорная матрица диагональна: $\bAo = \sigma\II, \ \bAt = \text{diag}(\bs), \ \bmuo = \mu$, $\bmut = \bm$.
+Скалярные априорная дисперсия и вектор средних, апостериорная матрица ковариаций диагональна: $\bAo = \sigma\II, \ \bAt = \text{diag}(\bs), \ \bmuo = \mu$, $\bmut = \bm$.
 
 Тогда $L_\bw(\DD,\bbf,\bw) = \sum\limits_{i=1}^d(\log\frac{\sigma}{\sigma_i} + \frac{(\mu-m_i)^2 + \sigma_i^2 + \sigma^2}{2\sigma^2})$
 
@@ -181,14 +194,20 @@ $\frac\partial{\partial\mu}\DKL = \sum\limits_{i=1}^W\frac{\mu-m_i}{\sigma^2}=0 
 
 $\frac\partial{\partial\sigma^2}\DKL = \sum\limits_{i=1}^W \frac1{2\sigma^2}-\frac{(\mu-m_i)^2 + \sigma_i^2}{2\sigma^4}=0 \ \Rightarrow \ \hat{\sigma}^2 = \frac1W\sum\limits_{i=1}^W (\mu-m_i)^2 + \sigma_i^2$.
 
+В частности, если апостериорная матрица ковариаций скалярна, т.е. $\bAt = \beta \II$:
+
+%$\frac\partial{\partial\mu}\DKL = \sum\limits_{i=1}^W\frac{\mu-m_i}{\sigma^2}=0 \Rightarrow \hat{\mu} = \frac1W\sum\limits_{i=1}^W m_i$.
+
+$\frac\partial{\partial\sigma^2}\DKL = \sum\limits_{i=1}^W \frac1{2\sigma^2}-\frac{(\mu-m_i)^2 + \beta^2}{2\sigma^4}=0 \ \Rightarrow \ \hat{\sigma}^2 = \frac1W\sum\limits_{i=1}^W (\mu-m_i)^2 + \beta^2$.
+
 \end{frame}
 
-\begin{frame}{Алгоритм}
+\begin{frame}{Алгоритм обновления параметров распределений}
 
 Оптимизация параметров сводится к следующему алгоритму:
 
 \begin{enumerate}
-	\item Инициализация $\bs = \textbf{0}, \ \bm = \textbf{0}, \ \mu = 0, \ \sigma^2 = 1$
+	\item Инициализация $\bs = \textbf{1}, \ \bm = \textbf{0}, \ \mu = 0, \ \sigma^2 = 1$
 	
 	\item \textcolor{blue}{\textbf{Повторять}}:
 	
@@ -232,7 +251,7 @@ $$\mathbf{h_i} = \text{tanh}(\mathbf{x_i^TW} + \mathbf{h_{i-1}^TU} + \mathbf{b})
 
 \begin{frame}{Вычислительный эксперимент}
 
-В качестве метрики была выбрана F1-мера:
+В качестве функционала качества была выбрана F1-мера:
 
 $$F_1 = 2 \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{precision}}$$
 
@@ -242,7 +261,7 @@ $$F_1 = 2 \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{p
 
 \begin{table}[H]
 	\centering
-	\caption{Результаты вычислительного эксперимента}
+	\caption*{Результаты вычислительного эксперимента:}
 	\label{my-label1}
 	\begin{tabular}{|l|l|}
 		\hline
@@ -275,77 +294,135 @@ $$F_1 = 2 \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{p
 %
 %\end{frame}
 
-\begin{frame}{Результаты вычислительного эксперимента}
+%\begin{frame}{Результаты вычислительного эксперимента}
+%
+%Чем больше плотность вероятности в нуле --- тем меньше важность параметра $\rho(0) \sim exp(-\frac{\mu_i^2}{2\sigma_i^2})$.
+%
+%Обозначим $\lambda = \big|\frac{\mu_i}{\sigma_i}\big|$, получаем $\rho(0) \sim exp(-\frac{\lambda^2}{2})$.
+%
+%%Для удаления весов используется параметр .% > \lambda
+%\smallskip
+%Веса с большим значением $\lambda$ имеют высокую плотность в нуле и могут быть удалены.
+%
+%\end{frame}
 
-Чем больше плотность вероятности в нуле --- тем меньше важность параметра $\rho(0) \sim exp(-\frac{\mu_i^2}{2\sigma_i^2})$.
-
-Обозначим $\lambda = \big|\frac{\mu_i}{\sigma_i}\big|$, получаем $\rho(0) \sim exp(-\frac{\lambda^2}{2})$.
-
-%Для удаления весов используется параметр .% > \lambda
-\smallskip
-Веса с большим значением $\lambda$ имеют высокую плотность в нуле и могут быть удалены.
-
-\end{frame}
-
-\begin{frame}{Результаты вычислительного эксперимента}
-Результаты удаления параметров для диагональной матрицы ковариаций представлены в таблице, где $p$ --- доля оставшихся параметров.
-\vspace{-0.3cm}
-\begin{table}[]
-	\centering
-	\label{my-label}
-	\begin{tabular}{|l|l|l|l|l|l|}
-		\hline
-		\multirow{2}{*}{$\lambda$} & \multirow{2}{*}{$p$} & \multirow{2}{*}{Initial\_L} & \multirow{2}{*}{Retrain\_L} & \multirow{2}{*}{Initial\_score} & \multirow{2}{*}{Retrain\_score} \\
-		&                                       &                                    &                                    &                                 &                                 \\ \hline
-		0                 & 1.000                                 & 11431                              & 11431                              & 0.313                           & 0.313                           \\ \hline
-		0.05              & 0.833                                 & 11306                              & 11219                              & 0.310                           & 0.336                           \\ \hline
-		0.1               & 0.673                                 & 11198                              & 11102                              & 0.308                           & 0.327                           \\ \hline
-		0.2               & 0.420                                 & 11071                              & 10851                              & 0.305                           & 0.331                           \\ \hline
-		0.4               & 0.195                                 & 10841                              & 10710                              & 0.291                           & 0.321                           \\ \hline
-		0.6               & 0.106                                 & 10827                              & 10545                              & 0.278                           & 0.311                           \\ \hline
-		0.8               & 0.064                                 & 10925                              & 10502                              & 0.278                           & 0.311                           \\ \hline
-		1.0                 & 0.040                                 & 10996                              & 10500                              & 0.278                           & 0.299                           \\ \hline
-		1.2               & 0.025                                 & 11256                              & 10506                              & 0.277                           & 0.277                           \\ \hline
-		1.4               & 0.018                                 & 11439                              & 10569                              & 0.276                           & 0.286                           \\ \hline
-	\end{tabular}
-\end{table}
+%\begin{frame}{Результаты вычислительного эксперимента}
+%Результаты удаления параметров для диагональной матрицы ковариаций представлены в таблице, где $p$ --- доля оставшихся параметров.
+%\vspace{-0.3cm}
+%\begin{table}[]
+%	\centering
+%	\label{my-label}
+%	\begin{tabular}{|l|l|l|l|l|l|}
+%		\hline
+%		\multirow{2}{*}{$\lambda$} & \multirow{2}{*}{$p$} & \multirow{2}{*}{Initial\_L} & \multirow{2}{*}{Retrain\_L} & \multirow{2}{*}{Initial\_score} & \multirow{2}{*}{Retrain\_score} \\
+%		&                                       &                                    &                                    &                                 &                                 \\ \hline
+%		0                 & 1.000                                 & 11431                              & 11431                              & 0.313                           & 0.313                           \\ \hline
+%		0.05              & 0.833                                 & 11306                              & 11219                              & 0.310                           & 0.336                           \\ \hline
+%		0.1               & 0.673                                 & 11198                              & 11102                              & 0.308                           & 0.327                           \\ \hline
+%		0.2               & 0.420                                 & 11071                              & 10851                              & 0.305                           & 0.331                           \\ \hline
+%		0.4               & 0.195                                 & 10841                              & 10710                              & 0.291                           & 0.321                           \\ \hline
+%		0.6               & 0.106                                 & 10827                              & 10545                              & 0.278                           & 0.311                           \\ \hline
+%		0.8               & 0.064                                 & 10925                              & 10502                              & 0.278                           & 0.311                           \\ \hline
+%		1.0                 & 0.040                                 & 10996                              & 10500                              & 0.278                           & 0.299                           \\ \hline
+%		1.2               & 0.025                                 & 11256                              & 10506                              & 0.277                           & 0.277                           \\ \hline
+%		1.4               & 0.018                                 & 11439                              & 10569                              & 0.276                           & 0.286                           \\ \hline
+%	\end{tabular}
+%\end{table}
 
 
 %$\lambda$ & Доля\параметров & F1-мера до оптимизации & F1-мера после оптимизации & Bits/weight \\ \hline
 
-\end{frame}
+%\end{frame}
 
 \begin{frame}{Результаты вычислительного эксперимента}
 	
+\begin{columns}
+	\column{6cm}
 	
-\begin{figure}
-	\includegraphics[height=7cm]{Pictures/Portion_of_pruned_weights_on_lambda_D_I.pdf}
-	\caption{Количество оставшихся параметров в зависимости от $\lambda$.}
-\end{figure}
+%	\vspace{-0.2cm}	
 	
+	Чем больше плотность вероятности в нуле $\rho(0) \sim exp(-\frac{\mu_i^2}{2\sigma_i^2})$ --- тем меньше важность параметра.
+	
+	$\lambda = \big|\frac{\mu_i}{\sigma_i}\big|$, тогда $\rho(0) \sim exp(-\frac{\lambda^2}{2})$.
+	
+	%Для удаления весов используется параметр .% > \lambda
+%	\smallskip
+	Веса с большим значением $\lambda$ имеют высокую плотность в нуле и могут быть удалены.	
+	
+%	\vspace{0.2cm}
+	
+	\begin{figure}
+	\includegraphics[width=5cm]{Pictures/lambda_D_I.pdf}
+	\vspace{-0.25cm}
+	\caption*{Зависимость F1-меры от $\lambda$.}
+	\end{figure}
+	
+%	\column{0.6\textwidth}
+	\column{6cm}
+
+	\vspace{-0.5cm}	
+	\begin{figure}
+	\includegraphics[width=5cm]{Pictures/Portion_of_pruned_weights_on_lambda_D_I.pdf}
+	\vspace{-0.25cm}	
+	\caption*{Количество параметров от $\lambda$.}
+	\end{figure}
+	
+	\vspace{-1.25cm}
+	
+	\begin{figure}
+	\includegraphics[width=5cm]{Pictures/pruning_evidence_D_I.pdf}
+	\vspace{-0.25cm}	
+	\caption*{Зависимость правдоподобия от $\lambda$.}
+	\end{figure}
+	
+\end{columns}
+%
+%	
+%	
+%\begin{figure}
+%	\includegraphics[height=7cm]{Pictures/Portion_of_pruned_weights_on_lambda_D_I.pdf}
+%	\caption*{Количество оставшихся параметров в зависимости от $\lambda$.}
+%\end{figure}
 \end{frame}
 
-\begin{frame}{Результаты вычислительного эксперимента}
+%\begin{frame}{Результаты вычислительного эксперимента}
+%
+%
+%\begin{figure}
+%\includegraphics[height=7cm]{Pictures/pruning_evidence_D_I.pdf}
+%\caption*{Зависимость правдоподобия от $\lambda$.}
+%\end{figure}
+%%\includegraphics[height=4cm]{Pictures/Evidence_unprunned_I_I.pdf}
+%	
+%\end{frame}
+%
+%\begin{frame}{Результаты вычислительного эксперимента}
+%	
+%\begin{figure}
+%	\includegraphics[height=7cm]{Pictures/lambda_D_I.pdf}
+%	\caption*{Зависимость F1-меры от $\lambda$.}
+%\end{figure}
+%%\includegraphics[height=4cm]{Pictures/Evidence_unprunned_I_I.pdf}
+%	
+%\end{frame}
 
-
-\begin{figure}
-\includegraphics[height=7cm]{Pictures/pruning_evidence_D_I.pdf}
-\caption{Зависимость правдоподобия от $\lambda$.}
-\end{figure}
-%\includegraphics[height=4cm]{Pictures/Evidence_unprunned_I_I.pdf}
-	
-\end{frame}
-
-\begin{frame}{Результаты вычислительного эксперимента}
-	
-\begin{figure}
-	\includegraphics[height=7cm]{Pictures/lambda_D_I.pdf}
-	\caption{Зависимость F1-меры от $\lambda$.}
-\end{figure}
-%\includegraphics[height=4cm]{Pictures/Evidence_unprunned_I_I.pdf}
-	
-\end{frame}
-
+%\begin{frame}
+%	{\centering
+%		\begin{table}[ht]
+%			\begin{tabular}{cc}
+%%				\begin{subfigure}{0.4\textwidth}\centering\includegraphics[width=0.3\columnwidth]{example-image-a}\caption{Figure A}\label{fig:taba}\end{subfigure}&
+%%				\begin{subfigure}{0.4\textwidth}\centering\includegraphics[width=0.3\columnwidth]{example-image-b}\caption{Figure B}\label{fig:tabb}\end{subfigure}\\
+%%				\newline
+%%				\begin{subfigure}{0.4\textwidth}\centering\includegraphics[width=0.3\columnwidth]{example-image-c}\caption{Figure C}\label{fig:tabc}\end{subfigure}&
+%%				\begin{subfigure}{0.4\textwidth}\centering\includegraphics[width=0.3\columnwidth]{example-image-a}\caption{Figure A again}\label{fig:taba2}\end{subfigure}\\
+%%			\end{tabular}
+%			\caption{A table with figures}
+%			\label{tab:mytable}
+%		\end{table}
+%	}
+%	
+%	We can see that Figure \ref{fig:taba} and Figure \ref{fig:taba2} is the same. Also the table counter value is used for the reference.
+%\end{frame}
 
 %----------------------------------------------------------------------------------------------------------
 \begin{frame}{Заключение}
