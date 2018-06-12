@@ -176,12 +176,12 @@
     $\bh = [\bh_1\ldots \bh_k]: x \mapsto [w_1^* \ldots w_k^*]$
     отображает пространство сегментов $\bX$ в
     \textit{промежуточное пространство} признаковых описаний $\bZ$.
-    \begin{block}{Алгоритм классификации}
+    \begin{block}{Классификатор}
         $$
         T \rightarrow \bX \xrightarrow{\bh} \bZ \xrightarrow{a} Y
         $$
         Где $\bh$ набор моделей локальной аппроксимации, $a(\cdot, \gamma)$ —
-        алгоритм многоклассовой классификации.
+        многоклассовый классификатор.
     \end{block}
 \end{frame}
 
@@ -236,7 +236,7 @@
 
     % %----------------------------------------------------------------------------------------------------------
 
-\begin{frame}{Модели локальной аппроксимации: Фурье-модель (SSA)}
+\begin{frame}{Модели локальной аппроксимации}
     \begin{block}{Вейвлет-модель (FFT)}
         \textbf{Структурный параметр}: $k$ частот из прямого преобьразования Фурье,
         соответствующие наибольшим амплитудам
@@ -344,7 +344,7 @@
 \end{frame}
 
 \begin{frame}{Решение задачи: order of non-linearity}
-    \textbf{GLM}: Отбор признаков из промежуточного пространства + GLD vs. нейронная сеть.
+    \textbf{GLM}: Отбор признаков  + GLD vs. нейронная сеть.
 
     \textbf{Non-linearity factor}: Отношение сложности универсальной модели и сложности GLM.
     \begin{columns} % align columns
@@ -352,6 +352,7 @@
             \begin{figure}[ht]
                 \centering
                   \includegraphics[width=\textwidth]{../pics/loss_and_std_of_n_units_reg.png}
+                  \caption{Отношение ошибки (NN/GLM), ошибка сети и ее std}
             \end{figure}
         \end{column}%
         \hfill
@@ -359,6 +360,7 @@
             \begin{figure}[ht]
                 \centering
                   \includegraphics[width=\textwidth]{../pics/loss_and_std_of_nl_factor.png}
+                  \caption{Отношение ошибки от фактора нелинейности}
             \end{figure}
         \end{column}%
     \end{columns}
