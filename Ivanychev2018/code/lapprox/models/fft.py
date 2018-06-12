@@ -15,6 +15,6 @@ class Fft(base.BaseLocalModel):
     
     def fit_row(self, row: np.ndarray) -> base.ApproxAndParams:
         params = fftpack.fft(row)
-        top_harmonics_idx = np.argsort(np.abs(params))[-self._n_harmonics:]
+        top_harmonics_idx = np.argsort(np.abs(params))[-self._n_harmonics - 1: -1]
         predicted = fftpack.ifft(params)
-        return base.ApproxAndParams(predicted, top_harmonics_idx[::-1])
+        return base.ApproxAndParams(predicted, sorted(top_harmonics_idx))

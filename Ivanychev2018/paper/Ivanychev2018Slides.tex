@@ -4,6 +4,7 @@
     \usepackage{amsmath, mathrsfs, mathtext}
     \usepackage{amsfonts}
     \usepackage{graphicx, epsfig}
+    \usepackage{subcaption}
     \usetheme{Warsaw}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
     \usecolortheme{sidebartab}
     \usepackage{bbm}
@@ -256,7 +257,115 @@
 \end{frame}
 
     % %----------------------------------------------------------------------------------------------------------
+\begin{frame}{Решение задачи: генерация данных}
+    \begin{columns} % align columns
+        \begin{column}{.4\textwidth}
+            \textbf{Данные с акселерометра}: 4 типа движения, частота дискретизации
+            100 Гц.
 
+            \textbf{Сегментация}: локальные экстремумы с окном + квантиль по длине
+            сегментов.
+
+            \textbf{Нормализация}: приведение к одной размерности с помощью
+            кубических сплайнов.
+
+        \end{column}%
+        \hfill
+        \begin{column}{\textwidth}
+            \begin{figure}
+                \begin{subfigure}[b]{0.25\textwidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{../pics/raw_walking.png}
+                    \caption{Ходьба}
+                    \label{fig:sfig1}
+                \end{subfigure}
+                \begin{subfigure}[b]{0.25\textwidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{../pics/raw_run.png}
+                    \caption{Бег}
+                    \label{fig:sfig2}
+                \end{subfigure}
+                \begin{subfigure}[b]{0.25\textwidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{../pics/raw_go_up.png}
+                    \caption{Вверх по лестнице}
+                    \label{fig:sfig3}
+                \end{subfigure}%
+                \begin{subfigure}[b]{0.25\textwidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{../pics/raw_go_down.png}
+                    \caption{Вниз по лестнице}
+                    \label{fig:sfig4}
+                \end{subfigure}
+                \label{fig:fig}
+            \end{figure}
+        \end{column}%
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}{Решение задачи: проверка простоты выборки}
+    \textbf{Данные}: сегменты временного ряда акселерометра.
+
+    \textbf{Тесты простоты выборки}: ($T$-тест) $\mathbb{E} \eps = 0, D \eps = \mathrm{const}$, а также
+
+    \begin{columns}[T] % align columns
+        \begin{column}{.48\textwidth}
+        \color{blue}\rule{\linewidth}{4pt}
+
+        Анализ унимодальности распределений
+
+    \begin{figure}[ht]
+        \centering
+          \includegraphics[width=\textwidth]{../pics/features_unimodality_short.png}
+    \end{figure}
+
+        \end{column}%
+        \hfill%
+        \begin{column}{.48\textwidth}
+        \color{blue}\rule{\linewidth}{4pt}
+
+        Анализ спектра выборки
+
+    \begin{figure}[ht]
+        \centering
+          \includegraphics[width=\textwidth]{../pics/sv_analysis.png}
+    \end{figure}
+
+        \end{column}%
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}{Решение задачи: order of non-linearity}
+    \textbf{GLM}: Отбор признаков из промежуточного пространства + GLD vs. нейронная сеть.
+
+    \textbf{Non-linearity factor}: Отношение сложности универсальной модели и сложности GLM.
+    \begin{columns} % align columns
+        \begin{column}{.5\textwidth}
+            \begin{figure}[ht]
+                \centering
+                  \includegraphics[width=\textwidth]{../pics/loss_and_std_of_n_units_reg.png}
+            \end{figure}
+        \end{column}%
+        \hfill
+        \begin{column}{.5\textwidth}
+            \begin{figure}[ht]
+                \centering
+                  \includegraphics[width=\textwidth]{../pics/loss_and_std_of_nl_factor.png}
+            \end{figure}
+        \end{column}%
+    \end{columns}
+
+\end{frame}
+\begin{frame}{Выводы}
+    \begin{itemize}
+        \item Выборка в промежуточном пространстве простая,
+        а аппроксимирующие ее линейная модель являются адекватной.
+        \item GLM адекватнее разделяет выборку чем универсальная модель, то есть
+        при одинаковой сложности обеспечивает более высокое качество и меньше переобучается.
+    \end{itemize}
+\end{frame}
 
     % \begin{frame}{Постановка задачи}
     % \begin{block}{\bf Задача ретроспективного прогноза}
