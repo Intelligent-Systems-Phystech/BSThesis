@@ -5,6 +5,7 @@
     \usepackage{amsfonts}
     \usepackage{graphicx, epsfig}
     \usepackage{subcaption}
+    \captionsetup[subfigure]{labelformat=empty}
     \usetheme{Warsaw}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
     \usecolortheme{sidebartab}
     \usepackage{bbm}
@@ -52,6 +53,11 @@
 \newcommand{\bTheta}{\boldsymbol{\Theta}}
 \newcommand{\bphi}{\boldsymbol{\phi}}
 \newcommand{\bdelta}{\boldsymbol{\delta}}
+
+\newcommand{\brs}[1]{\left(#1\right)}
+\newcommand{\sbrs}[1]{\left[#1\right]}
+\newcommand{\fbrs}[1]{\left\{#1\right\}}
+\newcommand{\rbrs}[1]{\left\langle #1 \right\rangle}
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Q}{\mathbb{Q}}
@@ -139,20 +145,22 @@
 
 
 \begin{frame}{Постановка задачи классификации}
-    \begin{block}{Временной ряд}
+    \begin{block}{Задан временной ряд}
     $$
-    S: T \to \R \text{ где } T = \{t_0, t_0 + d, t_0 + 2d \ldots\}.
+    S: T \to \R \text{, где } T = \{t_0, t_0 + d, t_0 + 2d \ldots\}.
     $$
     \end{block}
-    \begin{block}{Сегмент временного ряда}% Устно: При заданной ширине сегмента и метке времени это вектор
+    \begin{block}{Опрееделен сегмент временного ряда}% Устно: При заданной ширине сегмента и метке времени это вектор
     $$
-    \bx_i  = (S(t_i), S(t_i - d), S(t_i - 2d), \ldots, S(t_i - (n - 1)d)),
+    \bx_i  = [S(t_i), S(t_i - d), S(t_i - 2d), \ldots, S(t_i - (n - 1)d)]^\intercal,
 \;\; \bx_i \in X \equiv \R^n.
     $$
     \end{block}
         $\bX$ — набор сегментов данных акселерометра
 
         $\by$ — метки классов движения (бег, ходьба, подъем и спуск по лестнице)
+
+        То есть задана выборка $\mathfrak{D} = \{ (x_i, y_i) \}_{i=1}^l, \;\;\; y_i \in \{1, 2, \ldots K\}$
 
         $\bh$ — конечный набор моделей локальной аппроксимации.
 
@@ -168,21 +176,34 @@
         $$
         Оптимальные параметры определяются образом
         $$
-        \bh_i(x) = \arg\min_{w \in \R^{n_g}} \rho(g(w, x), x).
+        \bh_i(x) = \arg\min_{w \in \R^{n_g}} \rho\brs{g(w, x), x},
         $$
         $\bh_i$ — локально аппроксимирующая модель сегмента.
     \end{block}
 
-    $\bh = [\bh_1\ldots \bh_k]: x \mapsto [w_1^* \ldots w_k^*]$
+    Набор функций $\bh = [\bh_1\ldots \bh_k]: x \mapsto [w_1^* \ldots w_k^*]$
     отображает пространство сегментов $\bX$ в
     \textit{промежуточное пространство} признаковых описаний $\bZ$.
     \begin{block}{Классификатор}
         $$
-        T \rightarrow \bX \xrightarrow{\bh} \bZ \xrightarrow{a} Y
+        T \rightarrow \bX \xrightarrow{\bh} \bZ \xrightarrow{a} Y,
         $$
-        Где $\bh$ набор моделей локальной аппроксимации, $a(\cdot, \gamma)$ —
+        $\bh$ — набор моделей локальной аппроксимации, $a(\cdot, \gamma)$ —
         многоклассовый классификатор.
     \end{block}
+\end{frame}
+
+    % %----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Постановка задачи классификации}
+    Оптимизация функционалов качества локально аппроксимирующих моделей.
+    $$
+        \arg\min_{w \in W} \sum_{i=1}^l\sum_{k=1}^n ||g(w, \bx_i) - \bx_i||_2^2
+        $$
+    Оптимизация функционала касчества обобщенной линейной модели.
+    $$
+        \mathrm{arg}\min_{\theta \in \Theta} \sbrs{-\sum_{i=1}^l\sum_{k=1}^K [y_i = k]\log P(y_i = k| \bz_i, \theta)}
+    $$
 \end{frame}
 
     % %----------------------------------------------------------------------------------------------------------
@@ -194,7 +215,7 @@
         \begin{tabular}{|l|r|}
             \hline
             Модель & Структурные параметры \\
-            \hline 
+            \hline
             SEMOR & - \\
             AR-авторегрессия & порядок \\
             Фурье-модель FFT & количество главных частот \\
@@ -209,12 +230,12 @@
 
 \begin{frame}{Модели локальной аппроксимации}
     \begin{block}{AR-авторегрессия}
-        \textbf{Структурный параметр}: порядок $m$.
+        \textbf{Структурный параметр}: порядок $m$,
         $$
         g_{\text{AR}}(w, x) = \hat{\bx}, \text{ где }
         \hat{x}_i = \begin{cases}
-            x_k & \text{ при } k \in [1, m] \\
-            w_0 + \sum_{i=1}^m w_i x_{k - i} & \text{ при } k \in [m + 1, n]
+            x_k & \text{ при } k \in [1, m], \\
+            w_0 + \sum_{i=1}^m w_i x_{k - i} & \text{ при } k \in [m + 1, n].
         \end{cases}
         $$
     \end{block}
@@ -226,12 +247,12 @@
 
 \begin{block}{Фурье-модель (SSA)}
     \textbf{Структурный параметр}: количество главных собственных значений $k$.
-    Сингулярное разложение траекторное матрицы:
+    Сингулярное разложение траекторной матрицы,
     $$
-    S^\intercal S = VHV^\intercal, H = \mathrm{diag}(\lambda_1 \ldots \lambda_m)
+    S^\intercal S = VHV^\intercal, H = \mathrm{diag}(\lambda_1 \ldots \lambda_m),
     $$
 
-    $w$ образуют $k$ старших собственных значения.
+    Параметры образуют $k$ главных собственных значения.
 \end{block}
 \end{frame}
 
@@ -242,30 +263,47 @@
         \textbf{Структурный параметр}: $k$ частот из прямого преобьразования Фурье,
         соответствующие наибольшим амплитудам
         $$
-    w_{2j} = \mathrm{Re} \sum_{k=1}^{n} x_k \exp(-\frac{2\pi i}{n}kj), \; w_{2j + 1} = \mathrm{Im} \sum_{k=1}^{n} x_k \exp(-\frac{2\pi i}{n}kj)
+    w_{2j} = \mathrm{Re} \sum_{k=1}^{n} x_k \exp\brs{-\frac{2\pi i}{n}kj}, \; w_{2j + 1} = \mathrm{Im} \sum_{k=1}^{n} x_k \exp\brs{-\frac{2\pi i}{n}kj}
         $$
     \end{block}
     \begin{block}{Self-Modeling Regression}
-    $$
-    g(x, w) = w_1 + w_2 p(w_3 + w_4t)
-    $$
-
-    $$
-    w_{\text{SEMOR}} = [\hat{w_1}, \hat{w_2}, \hat{w_3}, \hat{w_4}, \rho]
-    $$
+        \begin{columns}
+            \begin{column}{.44\textwidth}
+                \begin{center}
+                    \includegraphics[scale=0.18]{../pics/semor_illustration.png}
+                \end{center}
+            \end{column}
+            \begin{column}{.56\textwidth}
+                $$
+                g(x, w) = w_1 + w_2 p(w_3 + w_4t),
+                $$
+                $$
+                w_{\text{SEMOR}} = [\hat{w_1}, \hat{w_2}, \hat{w_3}, \hat{w_4}, \rho].
+                $$
+            \end{column}
+        \end{columns}
     \end{block}
 \end{frame}
 
     % %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Построение промежуточного пространства}
-    \begin{figure}[ht]
-        \centering
-          \includegraphics[width=\textwidth]{../pics/algo.png}
-    \end{figure}
+\begin{frame}{Построение промежуточной выборки + обучение}
+    \begin{enumerate}
+        \item Для каждого $\bh_i \in \bh$ вычисляем
+        $$
+        [\bz_i^1 \ldots \bz_i^k]^\intercal = [\bh_i(\bx_1) \ldots \bh_i(\bx_k)]
+        $$
+        \item Конкатенируем вектора параметров $\bz_i = (\bz_1^i \ldots \bz_k^i)$,
+        то есть $\bz_i = \bh(\bx_i)$. Получили выборку в промежуточном пространстве $\bZ$.
+        \item Минимизируем функции потерь обобщенной линейной модели
+        $$
+        \hat{\theta} = \mathrm{arg}\min_{\theta \in \Theta} L(f(\bZ), \by)
+        $$
+    \end{enumerate}
 \end{frame}
 
     % %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Решение задачи: генерация данных}
+
+    \begin{frame}{Решение задачи: генерация данных}
     \begin{columns} % align columns
         \begin{column}{.4\textwidth}
             \textbf{Данные с акселерометра}: 4 типа движения, частота дискретизации
@@ -279,37 +317,35 @@
 
         \end{column}%
         \hfill
-        \begin{column}{\textwidth}
+        \begin{column}{.6\textwidth}
             \begin{figure}
-                \begin{subfigure}[b]{0.25\textwidth}
+                \begin{subfigure}[b]{0.4\textwidth}
                     \centering
                     \includegraphics[width=\linewidth]{../pics/raw_walking.png}
                     \caption{Ходьба}
-                    \label{fig:sfig1}
                 \end{subfigure}
-                \begin{subfigure}[b]{0.25\textwidth}
+                \begin{subfigure}[b]{0.4\textwidth}
                     \centering
                     \includegraphics[width=\linewidth]{../pics/raw_run.png}
                     \caption{Бег}
-                    \label{fig:sfig2}
                 \end{subfigure}
-                \begin{subfigure}[b]{0.25\textwidth}
+                \begin{subfigure}[b]{0.4\textwidth}
                     \centering
                     \includegraphics[width=\linewidth]{../pics/raw_go_up.png}
-                    \caption{Вверх по лестнице}
-                    \label{fig:sfig3}
+                    \caption{Вверх}
                 \end{subfigure}%
-                \begin{subfigure}[b]{0.25\textwidth}
+                \begin{subfigure}[b]{0.4\textwidth}
                     \centering
                     \includegraphics[width=\linewidth]{../pics/raw_go_down.png}
-                    \caption{Вниз по лестнице}
-                    \label{fig:sfig4}
+                    \caption{Вниз}
                 \end{subfigure}
-                \label{fig:fig}
+
             \end{figure}
         \end{column}%
     \end{columns}
 \end{frame}
+
+    % %----------------------------------------------------------------------------------------------------------
 
 \begin{frame}{Решение задачи: проверка простоты выборки}
     \textbf{Данные}: сегменты временного ряда акселерометра.
@@ -318,8 +354,6 @@
 
     \begin{columns}[T] % align columns
         \begin{column}{.48\textwidth}
-        \color{blue}\rule{\linewidth}{4pt}
-
         Анализ унимодальности распределений
 
     \begin{figure}[ht]
@@ -330,8 +364,6 @@
         \end{column}%
         \hfill%
         \begin{column}{.48\textwidth}
-        \color{blue}\rule{\linewidth}{4pt}
-
         Анализ спектра выборки
 
     \begin{figure}[ht]
@@ -341,30 +373,48 @@
 
         \end{column}%
     \end{columns}
-
 \end{frame}
 
-\begin{frame}{Решение задачи: order of non-linearity}
-    \textbf{GLM}: Отбор признаков  + GLD vs. нейронная сеть.
+    % %----------------------------------------------------------------------------------------------------------
 
-    \textbf{Non-linearity factor}: Отношение сложности универсальной модели и сложности GLM.
-    \begin{columns} % align columns
+\begin{frame}{Универсальная модель}
+    Определим сложность модели как количество нейронов на скрытом слое.
+
+    На выборке $(\bX, \by)$ обучаем универсальную модель — нейронную сеть,
+    варьируя количество нейронов на скрытом слое. Получаем зависимость
+    качества и дисперсии качества от сложности (количества нейронов).
+    \begin{center}
+        \includegraphics[width=\textwidth]{../pics/loss_and_std_of_n_units_reg.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Обобщенная линейная модель: отбор признаков}
+    Пользуемся логистической регрессией с $L_1$ регуляризацией.
+    \begin{columns}
         \begin{column}{.5\textwidth}
-            \begin{figure}[ht]
-                \centering
-                  \includegraphics[width=\textwidth]{../pics/loss_and_std_of_n_units_reg.png}
-                  \caption{Отношение ошибки (NN/GLM), ошибка сети и ее std}
-            \end{figure}
-        \end{column}%
-        \hfill
+            \begin{center}
+                \includegraphics[width=\textwidth]{../pics/lr_quality_C.png}
+            \end{center}
+        \end{column}
         \begin{column}{.5\textwidth}
-            \begin{figure}[ht]
-                \centering
-                  \includegraphics[width=\textwidth]{../pics/loss_and_std_of_nl_factor.png}
-                  \caption{Отношение ошибки от фактора нелинейности}
-            \end{figure}
-        \end{column}%
+            \begin{center}
+                \includegraphics[width=\textwidth]{../pics/lr_n_features_C.png}
+            \end{center}
+        \end{column}
     \end{columns}
+    Выбираем порог $C$, с устраивающим нас качеством и дисперсией. Эти признаки
+    используем в обобщенной линейной модели.
+\end{frame}
+
+\begin{frame}{Сравнение}
+    \begin{figure}[ht]
+        \centering
+          \includegraphics[width=\textwidth]{../pics/loss_and_std_of_nl_factor.png}
+          \caption{Отношение ошибок от отношения сложностей}
+    \end{figure}
+
+    Получили, что при одинаковой сложности, универсальная модель показывает
+    в $1.4$ раз худшее качество, чем универсальная линейная модель.
 
 \end{frame}
 \begin{frame}{Выводы}
