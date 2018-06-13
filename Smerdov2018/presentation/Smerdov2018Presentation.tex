@@ -132,10 +132,6 @@ $$L_\bbf(\by,\DD,\bbf) = \log \PP(\by|\DD,\bbf) = \log \int_{\bw}\PP(\by|\DD,\bw
 Априорное и апостериорное распределения параметров будем считать нормальными:
 $$\PP(\bw|\bbf) \sim \mathcal{N}(\bmuo,\bAo), \ \PP(\bw|\by,\DD,\bbf) \sim \mathcal{N}(\bmut,\bAt).$$
 
-\end{frame}
-
-\begin{frame}{Предлагаемая модель}
-%Для решения задачи использовалась рекуррентная нейронная сеть с одним скрытым слоем.
 Решение предлагается искать в классе $\mathfrak{F}$ рекуррентных нейронных сетей с одним скрытым слоем.
 
 %, основанного на факторизации матрицы слов-контекстов и использовании весовой функции для уменьшения значимости редких слов.
@@ -144,7 +140,20 @@ $$\PP(\bw|\bbf) \sim \mathcal{N}(\bmuo,\bAo), \ \PP(\bw|\by,\DD,\bbf) \sim \math
 $$\mathbf{h}_i = \text{tanh}(\mathbf{x}_i^T\mathbf{W} + \mathbf{h}_{i-1}^T\mathbf{U} + \mathbf{b}),$$
 
 где $\mathbf{x}_i\in R^m$ -- входной вектор, $\mathbf{h}_i\in R^n$, $\mathbf{W}\in R^{n \times m}$, $\mathbf{U}\in R^{n \times n}$, $\mathbf{b} \in R^n$.
+
 \end{frame}
+
+%\begin{frame}{Предлагаемая модель}
+%%Для решения задачи использовалась рекуррентная нейронная сеть с одним скрытым слоем.
+%Решение предлагается искать в классе $\mathfrak{F}$ рекуррентных нейронных сетей с одним скрытым слоем.
+%
+%%, основанного на факторизации матрицы слов-контекстов и использовании весовой функции для уменьшения значимости редких слов.
+%
+%Вектор значений скрытого слоя:
+%$$\mathbf{h}_i = \text{tanh}(\mathbf{x}_i^T\mathbf{W} + \mathbf{h}_{i-1}^T\mathbf{U} + \mathbf{b}),$$
+%
+%где $\mathbf{x}_i\in R^m$ -- входной вектор, $\mathbf{h}_i\in R^n$, $\mathbf{W}\in R^{n \times m}$, $\mathbf{U}\in R^{n \times n}$, $\mathbf{b} \in R^n$.
+%\end{frame}
 
 \begin{frame}{Вариационная нижняя оценка $L_\bbf(\by,\DD,\bbf)$}
 %Рассмотрим вариационную нижнюю оценку $L_\bbf(\by,\DD,\bbf)$, полученную 
@@ -153,12 +162,12 @@ $$\mathbf{h}_i = \text{tanh}(\mathbf{x}_i^T\mathbf{W} + \mathbf{h}_{i-1}^T\mathb
 %&L_\bbf(\by,\DD,\bbf)= \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf)d\bw \geq\\&\geq-\DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))+\\
 %&+ \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf,\bw)d\bw = -L(\by,\DD,\bbf,\bw)
 &L_\bbf(\by,\DD,\bbf)= \int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf)d\bw \geq\\
-&\geq-\underbrace{\DKL(\mathcal{N}(\bmut,\bAt)||\mathcal{N}(\bmuo,\bAo))}_{L_\bw(\DD,\bbf)}+ \underbrace{\int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf,\bw)d\bw}_{L_E(\by,\DD,\bbf,\bw)}.
+&\geq-\underbrace{\DKL(\mathcal{N}(\bmut,\bAt)||\mathcal{N}(\bmuo,\bAo))}_{L_\bw(\DD,\bbf)}+ \underbrace{\int_{\bw}\rho_2(\bw)\log\PP(\by|\DD,\bbf,\bw)d\bw}_{-L_E(\by,\DD,\bbf,\bw)}.
 \end{align*}
 %Первое слагаемое назовём сложностью модели $L_\bw(\DD,\bbf)$:
 %$$L_\bw(\DD,\bbf) = \DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))$$
 %$$L_\bw(\DD,\bbf) = \DKL(N(\bmut,\bAt)||N(\bmuo,\bAo))$$
-Второе слагаемое является матожиданием правдоподобия выборки $L_\DD(\by,\DD, \bbf,\bw) = \sum_{(\ba,\bb,y)\in\DD} \log\PP(y|\ba,\bb,\bw,\bbf).$:
+Второе слагаемое является матожиданием правдоподобия выборки $L_\DD(\by,\DD, \bbf,\bw) = \sum_{(\ba,\bb,y)\in\DD} \log\PP(y|\ba,\bb,\bw,\bbf)$:
 % Для модели $\bbf \in \FFF$ и вектора параметров $\bw$ определим логарифмическую функцию правдоподобия выборки:
 $$L_E(\by,\DD,\bbf,\bw) = -\mathsf{E}_{\bw\sim \mathcal{N}(\bmut,\bAt)}L_\DD(\by,\DD, \bbf,\bw).$$
 % Второе слагаемое формулы является матожиданием правдоподобия выборки:
@@ -244,7 +253,7 @@ $\frac\partial{\partial\sigma^2}\DKL = \sum\limits_{i=1}^W \frac1{2\sigma^2}-\fr
 
 \begin{frame}{Алгоритм обновления параметров распределений}
 
-Оптимизация параметров к:
+Оптимизация параметров:
 
 \begin{enumerate}
 	\item Инициализация $\bs = \textbf{1}, \ \bm = \textbf{0}, \ \mu = 0, \ \sigma^2 = 1$
@@ -392,10 +401,10 @@ $$F_1 = \frac{2 \cdot \text{precision} \cdot \text{recall}}{\text{precision} + \
 	Параметры с большим значением $\lambda$ могут быть удалены.
 %	Веса с большим значением $\lambda$ имеют высокую плотность в нуле и могут быть удалены.	
 	
-	\vspace{-0.00cm}
+	\vspace{0.1cm}
 	
 	\begin{figure}
-	\includegraphics[width=5.55cm]{Pictures/lambda_D_I.pdf}
+	\includegraphics[width=5.4cm]{Pictures/lambda_D_I.pdf}
 	\vspace{-0.45cm}
 	\caption*{Зависимость F1-меры от $\lambda$.}
 	\end{figure}
@@ -406,19 +415,19 @@ $$F_1 = \frac{2 \cdot \text{precision} \cdot \text{recall}}{\text{precision} + \
 	
 	\column{5.6cm}
 
-	\vspace{-0.65cm}
+	\vspace{-0.55cm}
 	\begin{figure}
 %	\hspace{-2cm}
-	\includegraphics[width=5.55cm]{Pictures/Portion_of_pruned_weights_on_lambda_D_I.pdf}
+	\includegraphics[width=5.4cm]{Pictures/Portion_of_pruned_weights_on_lambda_D_I.pdf}
 	\vspace{-0.45cm}	
 %	\hspace{-2cm}
 	\caption*{Количество параметров от $\lambda$.}
 	\end{figure}
 	
-	\vspace{-1.27cm}
+	\vspace{-1.2cm}
 	
 	\begin{figure}
-	\includegraphics[width=5.55cm]{Pictures/pruning_evidence_D_I.pdf}
+	\includegraphics[width=5.4cm]{Pictures/pruning_evidence_D_I.pdf}
 	\vspace{-0.45cm}	
 	\caption*{Зависимость правдоподобия от $\lambda$.}
 	\end{figure}
