@@ -1,0 +1,179 @@
+\documentclass[pt18, a4paper]{article}%Размер шрифта, размер страницы.
+\usepackage[english, russian]{babel}%Типографские заморочки написания различными языками: переносы, расстановка пробелов...
+\usepackage{indentfirst}%Отступы в начале параграфов = хорошо
+\usepackage{misccorr}%"Разнообразные коррекции". Еще больше поwправок к отечественным шрифтам.
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb,amsfonts,latexsym,mathtext,multicol}%Больше матсимволов богу матсимволов. Правила работы с мат.значками и т.д. Один из основных.
+\usepackage{ulem}%Подчеркивания. Зачеркивания. \uline и \sout
+
+
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+
+
+\usepackage{tikz}%Графы.
+\usetikzlibrary{arrows,automata,positioning,trees}
+\usepackage{mathtext}%Использование кириллицы в формулах. Да, там где $$.
+\usepackage{geometry}%Установка полей документа.
+\usepackage[T1,T2A]{fontenc}%Кодировки текстовых шрифтов. Последняя используется по умолчанию.
+\usepackage[cp1251]{inputenc}%Кодировки. Вроде для 8-битных символов.
+\usepackage{graphicx}%Настройки \includegraphics -штуки для вставки изображений.
+\usepackage{booktabs}
+\usepackage{diagbox}
+\usepackage{multirow}%Несколько строк в таблицах (шапки, к примеру)
+\usepackage{bigstrut}
+\usepackage{mathrsfs}
+
+\geometry{left=1cm}
+\geometry{right=1cm}
+\geometry{top=0.5cm}
+\geometry{bottom=2cm}%Это то, как работать с полями с помощью geometry
+
+\definecolor{linkcolor}{HTML}{790003} % цвет ссылок
+\definecolor{urlcolor}{HTML}{790003} % цвет гиперссылок
+\hypersetup{pdfstartview=FitH,  linkcolor=linkcolor,urlcolor=urlcolor, colorlinks=true}
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\newtheorem{Theorem}{Теорема}
+\def\ss{\Sigma^* }
+\let\eps\varepsilon
+\let\xra\xrightarrow
+\let\ll\langle
+\let\rr\rangle
+\def\astra{^{\ast}}
+\def\emp{\varnothing}
+\newenvironment{comment}{}{}
+
+\providecommand{\floor}[1]{\left \lfloor #1 \right \rfloor }
+\providecommand{\ceil}[1]{\left \lceil #1 \right \rceil }
+
+\newcommand{\sm}[2]{$\begin{smallmatrix}#1\\#2 \end{smallmatrix}$}%Спасибо все тому же Сергею за идею.
+
+\definecolor{lgray}{gray}{0.85}
+
+\tikzset{
+  treenode/.style = {align=center, inner sep=0pt, text centered,
+    font=\sffamily},
+  arn_n/.style = {treenode, circle, white, font=\sffamily\bfseries, draw=black,
+    fill=black, text width=1.5em},% arbre rouge noir, noeud noir
+  arn_b/.style = {treenode, circle, black, draw=blue, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_g/.style = {treenode, circle, black, draw=green, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_r/.style = {treenode, circle, black, draw=red, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_y/.style = {treenode, circle, black, draw=yellow, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_cy/.style = {treenode, circle, black, draw=cyan, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_yo/.style = {treenode, circle, black, draw=YellowOrange, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_just_to_end_this_fucking_template_shit/.style = {treenode, circle, black, draw=YellowOrange, 
+    text width=1.5em, very thick}% arbre rouge noir, noeud rouge
+
+
+}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lf}{\left\{}
+\newcommand{\rf}{\right\}}
+\newcommand{\ls}{\left[}
+\newcommand{\rs}{\right]}
+\newcommand{\lv}{\left|}
+\newcommand{\rv}{\right|}
+
+
+%\pagestyle{empty}
+\begin{document}
+\author{Шибаев Иннокентий, 474 группа (ФУПМ МФТИ)}
+\title{Прогнозирование оптимальных суперпозиций в задачах регрессии}
+\maketitle
+
+\section{Введение}
+\subsection{Актуальность темы.}
+Во многих задачах машинного обучения возникает проблема выбора наилучшей в терминах некоторого функционала качества модели (суперпозиции базовых функций) описывающей исходные данные. Задача выбора модели (задача определения данной суперпозиции) является переборной, и ввиду этого имеет высокую вычислительную сложность.
+
+\subsection{Цель работы.}
+Предложить метод прогнозирования оптимальных суперпозиций в задачах регрессии исходя из прецедентов выборов моделей.
+
+
+\section{Постановка задачи}
+\subsection{Описание выборки и исходная постановка }
+Решается задача регрессии. Дан некоторый набор выборок $\mathcal{A}=\{\bold A_1,\ldots,\bold A_N\},~\bold A_i=(\bold X_i,\bold y_i)$ где $\bold X_i$ ~--- признаковое описание $n_i$ объектов $i$-й выборки. а $\bold y_i$ - ответы на них. Для каждой пары $A_i$ также задана некоторая $f_i$ ~--- суперпозиция базовых функций являющаяся порождающей функцией этой выборки (т.е. $f_i(\bold X_i) = y_i$).
+
+Также предпологается, что данные однородны в том смысле, что $f_i\in\mathcal{F}$ ~--- семейство порождающих функций $m$ переменных и $\mathcal{F}=\{f:f=sup(g_1,\ldots,g_l)\}$ где $sup(g_1,\ldots,g_l)$ ~--- суперпозиция $l$ заданных базовых функций $g_1,\ldots,g_l$.
+
+Для пары $\bold A= (\bold X,\bold y)$Требуется найти суперпозицию $f^{\ast}$ наилучшим образом приближающую данную выборку
+\begin{align}
+f^{\ast} = \arg\min\limits_{f\in \mathcal{F}}S(f|w^{\ast},\bold X,\bold y)
+\label{task_1}
+\end{align}
+где $S$ ~--- заданная функция ошибки, $w^{\ast}$ - оптимальный набор параметров для модели $f$ при заданных $\bold X,\bold y$:
+\[w^{\ast}= \arg\min\limits_{f\in \mathcal{F}}S(w|f,\bold X,\bold y).\]
+В качестве функции потерь $S$ будем использовать разность квадратов регрессионных остатков:
+\[S(f|w,\bold X,\bold y)=\lv f(\bold X,w)-\bold y\rv_2^2\]
+
+\subsection{Метод решения}
+Рассмотрим отображение $h:\mathcal{A}\to\mathcal{F}$ которое дает решение (\ref{task_1}). Тогда можно переписать задачу в виде
+\[h^{\ast}=\arg\min\limits_{h\in H}\sum_{i=1}^{N}\| h(\bold A_i)(\bold X_i)-\bold y_i\|_2^2\]
+где $H$ - некоторое параметрическое множество допустимых отображений. Теперь воспользуемся тем, что для каждого $\bold A_i$ нам также дана функция $f_i$ порождающая эту выборку: $\lv f_i(\bold X_i)-\bold y_i\rv_2=0$. Заменяя, получим
+\[h^{\ast}=\arg\min\limits_{h\in H}\sum_{i=1}^{N}\| h(\bold A_i)(\bold X_i)-\bold y_i\|_2^2\]
+
+\subsection{Описание алгоритма}
+\begin{itemize}
+	\item В начале генерируется достаточно большое обучающее множество синтетических суперпозиций (линейные суперпозиции простых функций, возможно также суперпозиции следующего уровня). Для них делается зашумление.
+	
+	\item На этом множестве обучаем какой-нибудь классификатор (LogReg, SVC или что-нибудь такое). Для векторизации (нам нужно предугадывать много ответов) используем sklearn.multioutput.MultiOutputClassifier (для каждого столбца в $Y$ строится свой классификатор)
+	
+	\item Запускаем обученный классификатор на реальных данных, и смотрим на полученную матрицу задающую суперпозицию, восстанавливаем тем или иным способом (важно, что мы не predict-им сами матрицы, мы используем $predict\_probe$ чтобы считать матрицу вероятностей, после чего по ней восстанавливаем матрицу суперпозиции (это хотя бы гарантирует корректность последней)).
+	
+	Надежда на то что уже просмотренные нами суперпозиции в некотором смысле хорошо аппроксимируют нашу новую функцию. 
+\end{itemize}
+
+
+
+\subsection{Эксперименты на синтетических данных}
+
+Технология описана выше, здесь речь о том что вообще можно проверять.
+
+\includegraphics[scale=0.5]{./Graphs/MSE_TPR_20_func_sincos.eps}
+
+\begin{itemize}
+	\item Во-первых, можно посмотреть на зависимость от шума. Это я даже сделал, см графики выше. Хотя я не определился с размещением подписей, если есть предложения - пишите. У нас достаточно странный шаблон (там дико большие поля, 14 шрифт и т.д.) так что не хочу делать картинки в несколько колонок, постараюсь запихивать все в одну. 
+	
+	Итак - генерируем набор порождаюзих функций, генерируем суперпозиции, для каждой генерируем несколько наборов зашумленных данных, после чего делим на test и train, учимся и предсказываем. Метрики основные - две: первая это accuracy (просто доля матриц суперпозиций что были точно восстановлены), а вторая - среднее отклонение (квадрат). 
+	
+
+	\item Во-вторых (это кажется реально важным): посмотреть на то как работает алгоритм если в качестве train и test давать зашумленные функции (суперпозиции) но порожденные одним и тем же набором порождающих функций. По идее качество должно быть похуже, но надо проверить. Это как раз ближе к реальному использованию.
+	
+	\item В-третьих надо проверить как сильно влияет параметр сложности суперпозиции. Я считаю сложность так:
+	$$e^{\sin(\ln(x))}$$
+	имеет "глубину" равную трем. Этому я и полагаю равной сложность. Глубина равная 1 соответствует линейным комбинациям базовых функций (к примеру $sin(x) + ln(x) + e^x$). 
+	
+	Понятно, что тут качество должно быстро падать, все же я использую достаточно слабые алгоритмы классификации. Но все же то же интересно.
+	
+	\item В-четвертых надо придумать какие реальные данные использовать. У меня пока нет идей, хотя можно попробовать использовать те же временные ряды (USC-HAD и прочая). 
+\end{itemize}
+
+Из проблем - не знаю как прикрутить коэффициенты. Т.е. варьирование к примеру $sin(3x)$ и $sin(x)$ у меня достигается простым добавлением обеих порождающих функций. Это не страшно, когда речь идет о линейных суперпозициях (см. ниже) но все же не очень приятно.
+
+
+\subsection{Некоторые теоретические замечания}
+
+Хочется отметить, что когда рассматриваются простые суперпозиции сложности 1 (глубины) то это на самом деле очень интересно. Потому что в тех же терминах признакового описания временных рядов больше ничего и не надо.
+
+А плюсы огромны, как минимум стоит упомянуть то что в случае использования линейнх комбинаций матрицы суперпозиций имеют огромное число нулевых элементов (собственно ненулевые это только первый ряд (функция суммы) и последний столбец (столбец переменной)). Что позволяет строить не $n^2$ классификаторов ($n$ ~--- число порождающих функций) а $O(n)$. 
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+

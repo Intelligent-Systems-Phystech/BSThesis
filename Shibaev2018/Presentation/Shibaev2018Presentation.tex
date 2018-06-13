@@ -1,0 +1,292 @@
+\documentclass{beamer}
+\usepackage[cp1251]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,mathrsfs,mathtext}
+\usepackage{graphicx, epsfig}
+\usepackage{multicol}
+\usepackage{xcolor}
+
+\usetheme{Warsaw}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
+\usecolortheme{sidebartab}
+\usepackage{bbm}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\definecolor{beamer@blendedblue}{RGB}{15,120,80}
+%----------------------------------------------------------------------------------------------------------
+\title[\hbox to 56mm{Прогнозирование суперпозиций\hfill\insertframenumber\,/\,\inserttotalframenumber}]
+{Прогнозирование оптимальных\\ суперпозиций в задачах регрессии}
+\author[И.\,А. Шибаев]{\large \\Иннокентий Андреевич Шибаев}
+\institute{\tiny
+	Московский физико-технический институт\\
+	Физтех-школа прикладной математики и информатики\\
+	Факультет управления и прикладной математики\\
+	Кафедра <<Интеллектуальные системы>>}
+
+\date{\footnotesize{Научный руководитель: д.ф.-м.н. В.В.~Стрижов}\\\vspace{\baselineskip}Выпускная квалификационная работа бакалавра\\\vspace{\baselineskip}Москва 2018}
+%----------------------------------------------------------------------------------------------------------
+\begin{document}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+%\thispagestyle{empty}
+\titlepage
+\end{frame}
+
+%-----------------------------------------------------------------------------------------------------
+
+\begin{frame}{Цель исследования}
+	
+\vspace{3 mm}
+\begin{block}{\bf Задача}
+Восстановление суперпозиции задающей модель по ее описанию с помощью взвешенного графа с покрашенными вершинами. 
+\end{block}
+\begin{block}{\bf Цель}
+Построение алгоритма восстановления матрицы смежности графа суперпозиции по матрице суперпозиции предсказанной классификатором. 
+\end{block}
+\vspace{3 mm}
+\begin{block}{\bf Предложение}
+Использовать постановку задачи линейного программирования для k-MST, а затем восстановить отброшенные ограничения.
+\end{block}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Литература}
+\begin{itemize}
+\item Бочкарев А.~М., Софронов И.~Л., Стрижов В.~В. \\ Порождение экспертно-интерпретируемых моделей для прогноза проницаемости горной породы //Системы и средства информатики. 2017.
+\item Chudak F. A., Roughgarden T., Williamson D. P. Approximate k-MSTs and k-Steiner trees via the primal-dual method and Lagrangean relaxation //Mathematical Programming. – 2004.
+\item Hegde C., Indyk P., Schmidt L. A fast, adaptive variant of the Goemans-Williamson scheme for the prize-collecting Steiner tree problem //Workshop of the 11th DIMACS Implementation Challenge. Providence, Rhode Island: Workshop of the 11th DIMACS Implementation Challenge. – 2014.
+\end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Постановка задачи}
+\begin{block}{\bf Дано}
+Семейство базовых функций $\mathcal{F}=\{f_1,\ldots, f_n\}$, а также множество $\mathcal{G} = \{g_1,\ldots,g_m\}, ~g_i=g_i(f_1,\ldots,f_n)$ их суперпозиций.
+Дан набор выборок $\mathcal{A}=\{\bold A_1,\ldots,\bold A_N\},~\bold A_i=(\bold X_i,\bold y_i)$ где $\bold X_i$ ~--- признаковое описание $n_i$ объектов $i$-й выборки, а $\bold y_i = g_i(\bold X_i),g_i\in \mathcal{G}$.
+\end{block}
+\begin{block}{\bf Задача символьной регрессии}
+Построить суперпозицию $g^{\ast}=g(f_1,\ldots,f_n)$ минимизирующую некоторую функцию потерь
+\begin{align*}
+g^{\ast} = \arg\min\limits_{g\in \mathcal{G}}S(g|w^{\ast},\bold X,\bold y)
+\end{align*}
+где $S$ ~--- заданная функция ошибки, $w^{\ast}$ - оптимальный набор параметров для модели $f$ при заданных $\bold X,\bold y$
+\end{block}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Постановка задачи}
+\begin{block}{\bf Формат описания суперпозиции}
+	Для суперпозиции функций строится граф вычисления, матрица смежности которого и является описанием суперпозиции. 
+\end{block}
+\begin{block}{\bf Задача восстановления матрицы суперпозиции}
+	Дана матрица смежности неорентированного взвешенного графа $G=(V,E)$ с покрашенными вершинами и выделенной корневой вершиной $r$, при этом веса $w(e_i)=w_i\in[0,1],~e_i\in E$, а цвета вершин $c(v_i)=c_i\in\mathbb{N}$. 
+	
+	Построить максимальное остовное дерево накрывающее в этом графе как минимум $k$ вершин так, чтобы порядок вершины $v_i$ после накрытия был равен либо $0$, либо $c_i+1$ (для корневой вершины порядок равен $1$).
+\end{block}
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Постановка задачи (формат суперпозиции)}
+\includegraphics[scale=0.75]{Graphs/graph_repr.eps}
+\end{frame}
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Постановка задачи ($k-MST$, $PCST$)}
+\begin{block}{\bf Rooted $k-MST$ ($k$-Minimum spanning tree)}
+	Дан неорентированный взвешенный граф $G=(V,E)$ с выделенной корневой вершиной $r$, при этом веса $w(e_i)=w_i > 0,~e_i\in E$. 
+	
+	Построить минимальное остовное дерево накрывающее в этом графе как минимум $k$ вершин.
+\end{block}
+
+\begin{block}{\bf Rooted $PCST$ (Prize-Collecting Steiner Tree)}
+	Дан неорентированный взвешенный (и вершины и ребра имеют веса) граф $G=(V,E)$ с выделенной корневой вершиной $r$, при этом веса $w(e_i)=w_i > 0,~e_i\in E$ (стоимости) и $c(v_i)=c_i > 0,~v_i\in V$ (призы).
+	
+	Построить дерево $T$ максимизирующее функционал прибыли: $P = \sum\limits_{v_i\in T}c(v_i) - \sum\limits_{e_i\in E(T)}w(e_i)$.
+\end{block}
+\end{frame}
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Постановка задачи ($k-MST$, $PCST$)}
+\begin{block}{\bf Задача ЛП для $PCST$ (\textcolor{orange}{$k-MST$}) с релаксированными условиями целочисленности}
+\begin{equation*}
+\begin{aligned}
+& \underset{\substack{x_e,z_S \\ e\in E, S\subseteq V\backslash \{r\}}}{\text{minimize}}
+& & \min\sum\limits_{e\in E}c_ex_e + \lambda\left(\sum\limits_{S\subseteq V\backslash \{r\}}|S|z_S \textcolor{orange}{- (n-k)}\right) \\
+& \text{s.t.}
+& & \sum\limits_{e\in\delta(S)}x_e + \sum\limits_{T:T\supseteq S}z_T\geq 1, \; \forall S\subseteq V\backslash \{r\},~v\in S,\\
+&&& x_e\in[0,1], \;\forall e\in E\\
+&&& z_S\in[0,1], \;S\subseteq V\backslash \{r\}
+\end{aligned}
+\end{equation*}
+В нерелаксированной постановке $x_e\in\{0, 1\}$, и $x_e=1$ означает что соответствующее ребро взято в дерево. Аналогично, $z_S\in\{0, 1\}$, $z_S=1$ для множества $S = V \backslash T$
+\end{block}
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Вычислительный эксперимент}
+\begin{block}{\bf Предположения}
+\begin{itemize}
+	\item Наборы арностей функций имеют биномиальное распределение (много функций малой арности)
+	\item Одна переменная (обобщение на несколько переменных ~--- двумя способами)
+\end{itemize}
+\end{block}
+\begin{block}{\bf Метрика качества восстановления}
+В конечном счете нам нужно корректное дерево суперпозиции, так что восстановление мы будем считать лишь полное совпадение с исходной матрицей.
+
+$$\mathrm{Acc(R, N, \mathcal{M})} = \frac{1}{|\mathcal{M}|}\sum\limits_{M\in\mathcal{M}}\left[R(N(M))==M\right]$$
+где $N$ ~--- функция зашумления, а $R$ ~--- алгоритм восстановления.
+\end{block}
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Вычислительный эксперимент}
+\begin{block}{\bf Варианты алгоритма}
+\begin{multicols}{2}
+	\begin{itemize}
+		\item $DFS$
+		\item $BFS$
+		\item Алг. Прима
+		\item $k-MST$ через $PCST$
+		\item $k-MST+BFS$
+		\item $k-MST +$ алг. Прима
+	\end{itemize}
+\end{multicols}
+\end{block}
+
+\begin{block}{\bf Тестовое множество}
+\begin{itemize}
+	\item 100 наборов арностей (длиной 5~---20)
+	\item 20 функций для каждого набора
+	\item 5 зашумлений каждой функции
+	\item Шум ~--- равномерно распределенный
+\end{itemize}
+\end{block}
+
+\begin{block}{\bf Цель эксперимента}
+Сравнить $k-MST$ подходы с остальными
+\end{block}
+\end{frame}
+
+\begin{frame}{Результаты экспериментов, малые арности}
+\includegraphics[scale=0.4, trim={1.2cm, 0, 0, 0}]{Graphs/main_graph_100_1_20_5_alpha006_maxarity_2.pdf}
+\end{frame}
+
+\begin{frame}{Результаты экспериментов, малые арности}
+\begin{columns}
+	\begin{column}{0.4\textwidth}
+		\includegraphics[scale=0.53, trim={0.5cm, 0.5cm, 0, 0}]{Graphs/main_graph_100_1_20_5_alpha000_maxarity_2_local.pdf}
+	\end{column}
+	\begin{column}{0.60\textwidth}
+		\begin{block}{\bf Время работы (500000 запусков)}
+			\centering
+			\begin{tabular}{|c||c|c|c||c|}
+				\hline
+				base&$time, s$&&k-MST&$time, s$\\
+				\hline
+				$DFS$   &186&&$None$&1272\\
+				\hline
+				$BFS$   &181&&$BFS$&1221\\
+				\hline
+				$\text{Прим}$&571&&$\text{Прим}$&1745\\
+				\hline
+			\end{tabular}
+		\end{block}
+		\begin{block}{\bf Качество при шуме $\sim 0.5$}
+			\centering
+			\begin{tabular}{|c||c|c|c|c|c|}
+				\hline
+				$\text{Шум}$&.50&.52&.54&.56&.58\\
+				\hline
+				\hline
+				$DFS$ 		 &.50  &.43&.32&.25&.20\\
+				\hline
+				$BFS$ 		 &.83  &.68&.48&.35&.27\\
+				\hline
+				$\text{Прим}$&\bf 1.0  &\bf .83&\bf .59&\bf .42&\bf .32\\
+				\hline
+				\hline
+				$None$		 &.01  &.01&.01&.01&.01\\
+				\hline
+				$BFS$ 		 &.85  &.48&.27&.19&.14\\
+				\hline
+				$\text{Прим}$&.95  &.65&.42&.30&.22\\
+				\hline
+			\end{tabular}
+		\end{block}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Результаты экспериментов, большие арности}
+\includegraphics[scale=0.4, trim={1.2cm, 0, 0, 0}]{Graphs/main_graph_100_1_20_5_alpha006_maxarity_5.pdf}
+\end{frame}
+
+\begin{frame}{Результаты экспериментов, большие арности}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+	\includegraphics[scale=0.53, trim={0.5cm, 0.5cm, 0, 0}]{Graphs/main_graph_100_1_20_5_alpha000_maxarity_5_local.pdf}
+\end{column}
+\begin{column}{0.60\textwidth}
+	\begin{block}{\bf Время работы (500000 запусков)}
+		\centering
+		\begin{tabular}{|c||c|c|c||c|}
+			\hline
+			base&$time, s$&&k-MST&$time, s$\\
+			\hline
+			$DFS$   &201&&$None$&1061\\
+			\hline
+			$BFS$   &197&&$BFS$&1029\\
+			\hline
+			$\text{Прим}$&685&&$\text{Прим}$&1581\\
+			\hline
+		\end{tabular}
+	\end{block}
+	\begin{block}{\bf Качество при шуме $\sim 0.5$}
+		\centering
+		\begin{tabular}{|c||c|c|c|c|c|}
+			\hline
+			$\text{Шум}$&.50&.52&.54&.56&.58\\
+			\hline
+			\hline
+			$DFS$ 		 &.20  &.19&.16&.13&.11\\
+			\hline
+			$BFS$ 		 &.59  &.49&.36&.25&.20\\
+			\hline
+			$\text{Прим}$&\bf 1.0  &\bf .80&\bf .53&\bf .36&\bf .25\\
+			\hline
+			\hline
+			$None$		 &.01  &.01&.01&.01&.01\\
+			\hline
+			$BFS$ 		 &.79  &.43&.24&.15&.11\\
+			\hline
+			$\text{Прим}$&.91  &.60&.37&.25&.18\\
+			\hline
+		\end{tabular}
+	\end{block}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------------------------
+\begin{frame}{Заключение}
+\begin{itemize}
+\item Алгоритм Прима работает лучше всех остальных, и полностью восстанавливает при шуме до $0.5$ 
+
+\item $k-MST$ препроцессинг существенно повышает качество работы алгоритма зависящего от порядка обхода ($BFS$) 
+
+\item Для $k-MST$ параметр $\lambda$ в $PCST$ надо выставлять равным $0.5$
+
+\item При наличии даже малого кол-ва базовых функций больших арностей качество восстановления суперпозиций для любого из алгоритмов снижается.
+\end{itemize}
+\end{frame}
+%----------------------------------------------------------------------------------------------------------
+\end{document} 
