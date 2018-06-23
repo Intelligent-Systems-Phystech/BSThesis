@@ -1,0 +1,584 @@
+\documentclass[12pt, fleqn, unicode]{article}
+\usepackage{Diplo}
+\usepackage{tikz}
+\usepackage{mathtools}
+\usetikzlibrary{shapes,arrows,shadows}
+% \usepackage{subcaption}
+% \usepackage{subfig}
+\usepackage{subcaption}
+
+
+%\newcommand{\RR}{\mathbb{R}}
+%\DeclareMathOperator*{\argmin}{arg\,min}
+%\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\PP}{p}
+\newcommand{\DD}{{\mathfrak{D}}}
+\newcommand{\FF}{{\mathcal{F}}}
+%\newcommand{\AAA}{{\mathcal{A}}}
+\newcommand{\FFF}{{\mathfrak{F}}}
+\newcommand{\NNN}{{\mathcal{N}}}
+\newcommand{\WW}{{\mathbb{W}}}
+\newcommand{\bw}{{\textbf{w}}}
+\newcommand{\ba}{{\textbf{a}}}
+\newcommand{\bb}{{\textbf{b}}}
+\newcommand{\bx}{{\textbf{x}}}
+\newcommand{\II}{{\textbf{I}}}
+%\newcommand{\bmu}{{\boldsymbol{\mu}}}
+\newcommand{\bbf}{{\textbf{f}}}
+\newcommand{\by}{{\textbf{y}}}
+\newcommand{\bm}{{\textbf{m}}}
+\newcommand{\bW}{{\textbf{W}}}
+\newcommand{\bWs}{{\textbf{W}_{\textbf{s}}}}
+\newcommand{\bU}{{\textbf{U}}}
+\newcommand{\bV}{{\textbf{V}}}
+\newcommand{\bh}{{\textbf{h}}}
+\newcommand{\bu}{{\textbf{u}}}
+\newcommand{\bbW}{{\textbf{b}_{\textbf{W}}}}
+\newcommand{\bbU}{{\textbf{b}_{\textbf{U}}}}
+\newcommand{\bbV}{{\textbf{b}_{\textbf{V}}}}
+\newcommand{\bs}{{\boldsymbol{\sigma}}}
+\newcommand{\al}{{\alpha}}
+\newcommand{\bal}{\boldsymbol{\alpha}}
+\newcommand{\bbt}{\boldsymbol{\beta}}
+%\newcommand{\bA}{\mathbf{A^\text{-1}}}
+\newcommand{\bApr}{\mathbf{A^\text{-1}_{\text{pr}}}}
+\newcommand{\bAps}{\mathbf{A^\text{-1}_{\text{ps}}}}
+\newcommand{\bmupr}{\boldsymbol{\mu}}
+\newcommand{\bmups}{\textbf{m}}
+\newcommand{\DKL}{\mathit{D}_{\text{KL}}}
+\makeatletter
+\newenvironment{sqcases}{%
+  \matrix@check\sqcases\env@sqcases
+}{%
+  \endarray\right.%
+}
+\def\env@sqcases{%
+  \let\@ifnextchar\new@ifnextchar
+  \left\lbrack
+  \def\arraystretch{1.2}%
+  \array{@{}l@{\quad}l@{}}%
+}
+\makeatother
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+
+\begin{document}
+
+{
+\renewcommand{\baselinestretch}{1}
+\thispagestyle{empty}
+\begin{center}
+    \sc
+        Министерство образования и науки Российской Федерации\\
+        Московский физико-технический институт
+        {\rm(государственный университет)}\\
+        Факультет управления и прикладной математики\\
+        Кафедра <<Интеллектуальные системы>>\\
+        при Вычислительном центре им. А. А. Дородницына РАН\\[35mm]
+    \rm\large
+        Смердов Антон Николаевич\\[10mm]
+    \bf\Large
+    Выбор оптимальной модели рекуррентной сети в
+    задачах поиска парафраза\\[10mm]
+    \rm\normalsize
+        010900 — Прикладные математика и физика\\[10mm]
+    \sc
+        Выпускная квалификационная работа бакалавра\\[30mm]
+\end{center}
+\hfill\parbox{80mm}{
+    \begin{flushleft}
+    \bf
+        Научный руководитель:\\
+    \rm
+        д.ф.-м.н. Стрижов Вадим Викторович\\[4.9cm]
+    \end{flushleft}
+}
+\begin{center}
+    Москва\\
+    2018 г.
+\end{center}
+}
+
+\newpage
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\begin{abstract}
+	
+В работе рассматривается задача выбора оптимальной рекуррентной нейронной сети. В качестве критерия оптимальности используется нижняя оценка правдоподобия модели. Исследование сконцентрировано на применении вариационного подхода для аппроксимации апостериорного распределения параметров модели. Частным случаем аппроксимации выступает нормальное распределение параметров с различными видами матрицы ковариаций. Для увеличения правдоподобия модели предлагается метод удаления параметров с наибольшей плотностью вероятности в нуле. В качестве иллюстративного примера рассматривается задача многоклассовой классификации на выборке пар схожих и несхожих предложений SemEval 2015.
+
+  \bigskip
+    \textbf{Ключевые слова}: \emph{глубокое обучение; выбор оптимальной модели; рекуррентная нейросеть; разреживание нейросети; вариационный вывод.}
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\section{Введение}
+Целью работы является выбор оптимальной нейросетевой модели  из класса рекуррентных нейронных сетей. Рекуррентной нейросетью назыавется нейросеть со связью между нейронами одного слоя. В качестве критерия оптимальности используется нижняя оценка правдоподобия модели. 
+
+Число параметров в моделях глубокого обучения может достигать миллионов~\cite{DeepGoogle}. Большое число параметров влечет сложность оптимизации параметров и переобучение моделей\cite{Bishop}. Предлагается уменьшить число параметров рекуррентной сети. Это обеспечит б\'{о}льшую устойчивость модели и снизит время оптимизации её параметров. Для решения этой задачи используются как байесовские методы~\cite{Strijov_1}, так и методы прореживания переусложнённой нейросети, наращивания простой нейросети и их комбинации~\cite{Strijov_2}.
+
+Для построения модели рекурретной сети рассматривается модель из~\cite{Sanborn}, решающая задачу определения сходства предложений.
+Модель принимает на вход векторизованные представления слов. Векторизация выполняется с помощью алгоритма GloVe, основанного на факторизации матрицы слов-контекстов и использовании весовой функции для уменьшения значимости редких слов~\cite{GloVe}. Альтернативой этого алгоритма выступает линейная модель Word2vec, комбинирующая в себе Continuous Bag-of-Words, skip-gram, negative sampling~\cite{word2vec}. Несмотря на различные подходы к проблеме, GloVe и Word2vec оптимизируют схожие функционалы~\cite{Glo2vec}. Упрощённой линейной моделью Word2vec, предназначенной для классификации документов, является fastText --- метод, работающий на символьных n-граммах~\cite{fastText}. 
+
+%При оптимизации параметров рекуррентных сетей возникает проблема затухания градиентов, что существенно замедляет сходимость модели~\cite{vanishing_grad}. Кроме того, при анализе временных зависимостей рекуррентные нейросети склонны придавать большее значение поздним сигналам, теряя часть информации о начале временного ряда. Для решения этих проблем могут быть использованы LSTM и GRU, использующие внутреннюю память для контроллируемого хранения и модификации полученной информации\cite{GRU, Socher_2}. Наиболее существенным отличием GRU от LSTM является отсутствие output gate и меньшее число параметров. 
+
+В работе предлагается подход, основанный на получении вариационной нижней оценки правдоподобия модели. Подобная задача решалась в~\cite{Graves} аппроксимацией апостериорного распределения нормальным, получением аналитических формул для нижней границы правдоподобия модели и удалением параметров с наибольшей плотностью вероятности в нуле. Описанный ниже подход продолжает это исследование. Априорное и апостериорное распределение параметров аппроксимируются нормальным со скалярным, диагональным и блочным видами матрицы ковариаций. После оптимизации гиперпараметров выполняется прореживание сети. 
+
+Предлагаемый подход сравнивается с методом удаления параметров Optimal Brain Damage, базирующемся на анализе функции ошибки~\cite{OBD}. Его обобщенной версией является алгоритм Optimal Brain Surgeon~\cite{OBS}, не предполагающий диагональный вид гессиана функции ошибки.
+
+Вычислительный эксперимент проводится на выборке размеченных пар предложений SemEval 2015. Для каждой пары предложений из корпуса дана экспертная оценка их семантической близости. Требуется построить модель, оценивающую семантическую близость двух предложений. Проблема рассматривается как задача многоклассовой классификации, аналогично~\cite{Sanborn}. Критерием качества является F1-мера, учитывающая как полноту, так и точность предсказаний.
+В качестве базовой модели рассматривается пара соединённых рекуррентных сетей с общим вектором параметров и softmax-классификатором на выходе.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Задача выбора оптимальной нейросетевой модели}
+
+\subsection{Описание используемой выборки и модели.}
+Для построения выборки используется набор пар предложений SemEval 2015~\cite{SemEval2015}.
+%\footnote{http://alt.qcri.org/semeval2015/task2/index.php?id=data-and-tools} с экспертной разметкой семантической близости.
+Каждому слову сопоставим вектор размерности $n$.
+Обозначим за $l$ число слов в самом длинном предложении. Предложения длины меньше $l$ дополним нулевыми векторами. 
+Построим выборку
+$$ \DD = \{(\bx_i,y_i)\}, i = 1,\dots,N,$$
+где $\bx_i = [\bx_i^1,\bx_i^2]$ --- пары последовательностей векторов слов, соответствующих $i$-ой паре предложений, $\bx_i^1, \bx_i^2 \in \RR^{n\times l}$;
+$y_i \in Y = \{0,\dots,5\}$ --- экспертная оценка семантической близости. 
+
+Требуется построить модель $f(\bw): \RR^{n\times l} \times \RR^{n\times l} \to Y$, сопоставляющую паре предложений $\bx_i^1$ и $\bx_i^2$ класс семантической близости, где $\bw \in \WW\subseteq\RR^s$ --- пространство параметров модели.
+%$f: \RR^{n\times l} \times \RR^{n\times l} \times \WW \to Y$
+Искомая модель выбирается из множества $\FFF$ рекуррентных нейронных сетей с функцией активации $\tanh$. Модель 
+\[
+f(\bw): \RR^{n\times l} \times \RR^{n\times l} \to Y
+\]
+принадлежит искомому классу моделей~$\FFF$, если существуют такие матрицы перехода $\bW\in \RR^{n\times m}, \bU\in \RR^{n\times n}, \bV\in \RR^{(|Y| \times 2n)}$ и вектор смещения $\bb \in \RR^{n}$, что для $j$-ых элементов $\bx_{ij}^1, \bx_{ij}^2 \in \RR^m$ последовательностей $\bx_i^1$ и $\bx_i^2$ определены векторы скрытого слоя $\bh_{ij}^1, \bh_{ij}^2 \in \RR^{n}$:
+\begin{gather}
+	\bh_{ij}^1 = \tanh(\bW\cdot \bx_{ij}^1 + \bU\cdot \bh_{i,j-1}^1 + \bb),\\
+	\bh_{ij}^2 = \tanh(\bW\cdot \bx_{ij}^2 + \bU\cdot \bh_{i,j-1}^2 + \bb).
+\end{gather}
+%После $l$-ой итерации значения $h_{il}^1$ и $h_{il}^2$ конкатенируются. Результат используется для определения класса семантической близости:
+Для определения класса семантической близости используются последние значения скрытого слоя $\bh_{il}^1$ и $\bh_{il}^2$, сконкатенированные в один вектор. После $l$-ой итерации пару предложений будем относить к классу с наибольшим значением~\eqref{eq:classify}, полученным после $l$-ой итерации, $j=1,\dots,l$:
+\begin{gather}
+	y = \argmax_{k\in Y}
+	\left(\bV%\cdot
+	\begin{bmatrix}
+		\bh_{il}^1\\
+		\bh_{il}^2
+	\end{bmatrix}\right)_k,
+	\label{eq:classify}
+\end{gather}
+где $(\cdot)_k$ --- $k$-ая компонента вектора. 
+Для каждой модели и соответствующего ей вектора параметров $\bw \in \WW$ определим логарифмическую функцию правдоподобия выборки $L_\DD(\DD,\bbf,\bw)$:
+\begin{gather}
+	L_\DD(\DD, \bbf,\bw) = \log\PP(\by|\bx,\bbf,\bw) = \log\PP(\DD|\bbf,\bw) = \sum_{(\bx_i,y_i)\in\DD} \log\PP(y_i|\bx_i,\bbf,\bw) \label{L^N},
+\end{gather}
+где $\PP(\by|\bx,\bbf,\bw)$ --- апостериорная вероятность вектора $\by$ при заданных $\bx,\bbf,\bw$.
+Здесь и далее используется обозначение~$\PP(\bx|\by) = \PP(\DD)$.
+
+\subsection{Правдоподобие модели.}
+Оптимальная модель $\bbf$ находится максимизацией логарифма ее правдоподобия:
+\begin{gather}
+	L_\bbf(\DD,\bbf) = L_\bbf(\DD|\bbf) = \log \PP(\by|\bx,\bbf) = \log \PP(\DD|\bbf) = \log \int_{\bw \in \WW}\PP(\DD|\bw,\bbf)\PP(\bw|\bbf)d\bw. \label{truth}
+\end{gather}
+Апостериорное распределение параметров модели находится из уравнения \eqref{param}:
+\begin{gather}
+	\PP(\bw|\DD,\bbf) = \frac{\PP(\DD|\bw,\bbf)\PP(\bw|\bbf)}{\PP(\DD|\bbf)}.
+	\label{param}
+\end{gather}
+Приблизим интеграл \eqref{truth} вариационной нижней оценкой. Воспользуемся оценкой~\cite{Bishop}~(разделы 10.2-10.4), полученной из неравенства Йенсена:
+\begin{gather}
+%\[
+\begin{split}
+L_\bbf(\DD,\bbf) = \log\int\limits_{\bw \in \WW}\PP(\DD|\bw)\PP(\bw|\bbf)d\bw =
+=\int\limits_{\bw \in \WW}\PP(\bw|\DD,\bbf)\log\frac{\PP(\bw|\DD,\bbf)}{\PP(\DD|\bbf,\bw)}d\bw +\\+ \DKL\bigl(\PP(\DD|\bw)||\PP(\DD|\bbf)\bigl),
+\end{split}
+%\]
+\end{gather}
+где~$\DKL\bigl(q(\bw)||p(\bw)\bigr)$~--- расстояние Кульбака-Лейблера между $q(\bw)$ и $p(\bw)$,
+%\[
+\begin{gather}
+\displaystyle \DKL\bigl(q(\bw)||p(\bw)\bigr) = - \int_{\bw}q(\bw)\log\frac{q(\bw)}{p(\bw)}d\bw.
+\end{gather}
+%\]
+Учитывая неотрицательность расстояния Кульбака-Лейблера, получаем:
+\begin{gather}
+	L_\bbf(\DD,\bbf) \geq \int_{\bw \in \WW}\PP(\bw|\DD,\bbf)\log\frac{\PP(\bw|\DD,\bbf)}{\PP(\DD|\bbf,\bw)}d\bw.
+	\label{est_1}
+\end{gather}
+Упростим интеграл в левой части \eqref{est_1}:
+\begin{gather}
+	\begin{split}
+		\int\limits_{\bw \in \WW}\PP(\bw|\DD,\bbf)\log\frac{\PP(\bw|\DD,\bbf)}{\PP(\DD|\bbf,\bw)}d\bw = \\
+		= -\DKL\bigl(\PP(\bw|\DD,\bbf)||\PP(\bw|\bbf)\bigr) + \int\limits_{\bw \in \WW}\PP(\bw|\DD,\bbf)\log\PP(\bw|\DD,\bbf)d\bw.% =\\&= -L(\DD,\bbf,\bw),
+	\end{split}
+	\label{est_2}%\nonumber
+\end{gather}
+Обозначим сумму в левой части \eqref{est_2} за $-L(\DD,\bbf,\bw)$:
+\begin{gather}
+	L(\DD,\bbf,\bw) = \underbrace{\DKL\bigl(\PP(\bw|\DD,\bbf)||\PP(\bw|\bbf)\bigr)}_{L_\bw(\DD,\bbf,\bw)} - \underbrace{\int_{\bw \in \WW}\PP(\bw|\DD,\bbf)\log\PP(\DD|\bbf,\bw)d\bw}_{L_E(\DD,\bbf)}.
+	\label{est_3}
+\end{gather}
+
+Первое слагаемое формулы \eqref{est_3} интерпретируется как минимальная длина описания распределения $\PP(\bw|\DD,\bbf)$ с помощью $\PP(\bw|\bbf)$. Эту величину назовём сложностью модели $L_\bw(\DD,\bbf,\bw)$:
+\begin{gather}
+	L_\bw(\DD,\bbf,\bw) = \DKL\bigl(\PP(\bw|\DD,\bbf)||\PP(\bw|\bbf)\bigr). \label{complexity}
+\end{gather}
+Второе слагаемое формулы \eqref{est_3} является минус матожиданием правдоподобия выборки $L_\DD$ \eqref{L^N} и тем меньше, чем выше правдоподобие выборки, поэтому интерпретируется как функционал ошибки $L_E (\DD,\bbf)$ в ходе вычислительного эксперимента,
+\begin{gather}
+	L_E (\DD,\bbf) = \mathsf{E}_{\bw\sim \PP(\bw|\DD,\bbf)}L_\DD(\by,\DD, \bbf,\bw).
+\end{gather}
+Запишем суммарную функцию потерь $L(\DD,\bbf,\bw)$ как сумму функционала сложности модели $L_\bw(\DD,\bbf,\bw)$ и функционала ошибки $L_E (\DD,\bbf)$:
+\begin{gather}
+	L(\DD,\bbf,\bw) = L_\bw(\DD,\bbf,\bw) + L_E (\DD,\bbf) \label{loss}.
+\end{gather}
+Искомая модель минимизирует суммарный функционал потерь
+\begin{gather}
+	\bbf = \argmin_{\bbf \in \FFF}L(\DD,\bbf,\bw).
+\end{gather}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Предлагаемое решение оптимизационной задачи.}
+\subsection{Вариационный подход.}
+Так как апостериорное распределение $\PP(\bw|\DD,\bbf)$ \eqref{param} невозможно получить аналитически, минимизация функционала потерь $L(\DD,\bbf,\bw)$ \eqref{loss} затруднена. Для решения этой проблемы применим вариационный подход. Он заключается в аппроксимации неизвестного распределения распределением из известного класса.
+В качестве приближения $\PP(\bw|\DD,\bbf)$ выберем нормальное распределение:
+$$\PP(\bw|\DD,\bbf) \sim \NNN(\bmups,\bAps),$$
+где $\bmups,\bAps$ --- вектор средних и матрица ковариации этого распределения.
+Априорное распределение $\PP(\bw|\bbf)$ вектора параметров $\bw$ будем считать нормальным с параметрами $\bmupr$ и $\bApr$:
+$$\PP(\bw|\bbf) \sim \NNN(\bmupr,\bApr),$$
+где $\bmupr$ --- вектор средних, $\bApr$ --- матрица ковариаций.
+%Для вычисления $L(\DD,\bbf,\bw)$ аналитически и последующей минимизации применим вариационный подход. Он заключается в аппроксимации неизвестного распределения распределением из некоторого известного класса.
+%
+%Выражение $\PP(\DD|\bbf)$ невозможно получить аналитически, поэтому применим вариационный подход. Он заключается в аппроксимации неизвестного распределения распределением из некоторого известного класса.
+%В качестве приближения $\PP(\DD|\bbf)$ выберем нормальное распределение:
+%$$\PP(\DD|\bbf) \sim \NNN(\bmups,\bAps),$$
+%где $\bmups,\bAps$ --- вектор средних и матрица ковариации этого распределения.
+Рассстояние Кульбака-Лейблера между нормальными распределениями $\NNN(\bmupr,\bApr)$ и $\NNN(\bmups,\bAps)$ вычисляется по формуле \eqref{DKL_norm}:
+\begin{gather}
+	\DKL\bigl(\NNN(\bmupr,\bApr)||\NNN(\bmups,\bAps)\bigr) = \frac12 \big( \log \frac{|\bAps|}{|\bApr|}-d+\text{tr}(\textbf{A}_2\bApr) + (\bmupr-\bmups)^T\textbf{A}_2(\bmupr-\bmups) \big). \label{DKL_norm}
+\end{gather}
+
+Рассмотрим частные случаи вида матриц ковариаций $\bApr$ и $\bAps$. Так как априори у нас нет предпочтений при выборе параметров, то априорное распределение для всех параметров считаем одинаковым, т.е. вектор средних $\bmupr = \mu \boldsymbol{1}$, матрица ковариаций скалярна: $\bApr = \sigma\II$.
+После получения информации о выборке мы получаем апостериорный вектор средних $\bmups$.
+
+%После вычисления апостериорного распределения $\NNN(\bmups,\bAps)$ будем аппроксимировать априорное 
+Алгоритм решения оптимизационной задачи заключается в выполнении градиентного шага при заданном априорном распределении, вычислении апостериорного распределения и аппроксимации нового априорного распределения полученным апостериорным.
+%Предположим, что апостериорное распределение параметров имеет скалярный или диагональный вид матрицы ковариаций:
+Рассмотрим различные виды апостериорной матрицы ковариаций $\bAps$.
+\subsection{Скалярная матрица ковариаций.}
+Матрица ковариаций скалярна: $\bAps = \alpha \II$.
+В этом случае $$
+\DKL\bigl(\NNN(\bmupr,\bApr)||\NNN(\bmups,\bAps)\bigr) = \sum\limits_{i=1}^W\big(\log\frac{\sigma}{\alpha} + \frac{(\mu-m_i)^2 + \alpha^2 + \sigma^2}{2\sigma^2}\big).
+$$
+По значениям параметров $\alpha$ и $\bm$ апостериорного распределения  вычислим  параметры априорного. Число элементов вектора~$\bm$ обозначим~$W$. Из условия $\frac\partial{\partial\mu}\DKL = \sum_{i=1}^W\frac{\mu-m_i}{\sigma^2}=0$ получаем выражения для $\mu$ на следующей итерации $\hat{\mu} = \frac1W\sum_{i=1}^W m_i$.
+Аналогично $\frac\partial{\partial\sigma^2}\DKL = \sum_{i=1}^W \frac1{2\sigma^2}-\frac{(\mu-m_i)^2 + \alpha^2}{2\sigma^4}=0 \ \Rightarrow \ \hat{\sigma}^2 = \frac1W\sum_{i=1}^W (\mu-m_i)^2 + \alpha^2$.
+
+\subsection{Диагональная матрица ковариаций.} Матрица ковариаций диагональна: $\bAps = \text{diag}(\bs^2)$.	
+В этом случае \[\DKL\bigl(\NNN(\bmupr,\bApr)||\NNN(\bmups,\bAps)\bigr) = \sum\limits_{i=1}^W(\log\frac{\sigma}{\sigma_i} + \frac{(\mu-m_i)^2 + \sigma_i^2 + \sigma^2}{2\sigma^2}).\]
+Значения параметров априорного распределения для следующей итерации вычисляются следующим образом:
+\[ \text{из} \ \frac\partial{\partial\mu}\DKL = \sum\limits_{i=1}^W\frac{\mu-m_i}{\sigma^2}=0 \ \text{получаем} \ \hat{\mu} = \frac1W\sum\limits_{i=1}^W m_i,\]
+\[ \text{из} \ \frac\partial{\partial\sigma^2}\DKL = \sum\limits_{i=1}^W \frac1{2\sigma^2}-\frac{(\mu-m_i)^2 + \sigma_i^2}{2\sigma^4}=0 \ \text{получаем} \ \hat{\sigma}^2 = \frac1W\sum\limits_{i=1}^W (\mu-m_i)^2 + \sigma_i^2.\]
+%\end{enumerate}
+
+\subsection{Оптимизационный алгоритм.}
+Оптимизация параметров сводится к следующему алгоритму.\\
+\indent \indent Инициализировать~$\bs = \textbf{1}, \ \bm = \textbf{0}, \ \mu = 0, \ \sigma^2 = 1$.\\
+\indent \indent {\textbf{Повторять}}:\\
+\indent \indent Сделать градиентный шаг $\bs:=\bs-\eta\nabla\bs, \ \bm:=\bm-\eta\nabla\bm, \ \bw := \bw - \eta \nabla \bw$.\\
+\indent \indent Обновить параметры априорного распределения $\mu:= \hat{\mu}, \ \sigma^2:=\hat{\sigma}^2$.\\
+\indent \indent {\textbf{Пока}} значение $L$ не стабилизируется.
+
+%\nolinenumbers
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Удаление параметров из сети}
+
+%\subsection{Алгоритм удаления параметров.}
+Введём множество индексов активных параметров модели $\mathcal{A} = \{i | w_i \neq 0\} $. Для увеличения правдоподобия модели предлагается уменьшить её сложность, т.е. уменьшить количество параметров $|\mathcal{A}|$. Для удаления выберем параметры, имеющие наибольшую плотность апостериорной вероятности $\rho$ в нуле.
+Если апостериорная матрица ковариаций скалярна, то  
+\begin{gather}
+	\rho_i = \exp\left(-\frac{\mu_i^2}{2\sigma^2}\right).
+\end{gather}
+Чем больше $\rho$, тем меньше $|\frac{\mu_i}{\sigma}|$, поэтому удаляются параметры со значением $|\frac{\mu_i}{\sigma}| < \lambda$, где $\lambda$ --- пороговое значение. Варьируя пороговое значение $\lambda$, выбираем оптимальное число неудалённых параметров.
+Для диагонального вида матрицы ковариаций критерий удаления параметров записывается как $|\frac{\mu_i}{\sigma_i}| < \lambda$.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Вычислительный эксперимент}
+\subsection{Описание выборки и результаты базовых алгоритмов.}
+Цель эксперимента~--- проверка работоспособности предложенного алгоритма и сравнение результатов с ранее полученными. В качестве данных использовалась выборка SemEval 2015, состоящая из 8331 пар схожих и несхожих предложений. Слова преобразовывались в вектора размерности 50 при помощи алгоритма GloVe~\cite{GloveURL}.
+%\footnote{https://github.com/stanfordnlp/GloVe}
+Для базовых алгоритмов тренировочная, валидационная и тестовая выборки составили 70\%, 15\% и 15\% соответственно.
+Для рекуррентной нейронной сети, полученной вариационным методом, валидационная выборка отсутствовала, а тренировочная и тестовая выборки составили 85\% и 15\% соответственно.
+Критерием качества была выбрана F1-мера.
+В качестве базовых алгоритмов использовались линейная регрессия, метод ближайших соседей, решающее дерево и модификация метода опорных векторов SVC. Базовые алгоритмы взяты из библиотеки sklearn.
+
+%\cite{sklearn}.
+%\footnote{http://scikit-learn.org/stable/}.
+Дополнительно были построены рекуррентная нейросеть с одним скрытым слоем~\cite{Sanborn} и нейросеть с одним скрытым слоем и вариационной оптимизацией параметров~\cite{Graves, code}.
+% \footnote{https://sourceforge.net/p/mlalgorithms/code/HEAD/tree/Group474/Smerdov2017Paraphrase/code/}.
+
+\begin{table}[!htp]
+	\centering
+	\caption{Результаты вычислительного эксперимента}
+	\label{my-label}
+	\begin{tabular}{|l|l|l|}
+		\hline
+		Classificator          & F1-measure, валидация & F1-measure, test \\ \hline
+		Logistic Regression    & 0.286                 & 0.286            \\ \hline
+		SVC                    & 0.290                 & 0.290            \\ \hline
+		DecisionTreeClassifier & 0.316                 & 0.316            \\ \hline
+		KNeighborsClassifier   & 0.322                 & 0.322            \\ \hline
+		RNN                    & 0.393                 & 0.362            \\ \hline
+		RNN+variational, I, I  &  ---                     & 0.311            \\ \hline
+		RNN+variational, D, I  &  ---                     & 0.330             \\ \hline
+	\end{tabular}
+\end{table}
+
+\subsection{Результаты обучения нейросети.}
+На рисунках \ref{training_I_I} и \ref{training_D_I} представлены кривые обучения моделей со скалярной и диагональной апостериорной матрицей ковариаций. В обоих случаях качество моделей стабилизируется к 70-ой итерации, после этого обучения прекращается.
+
+\begin{figure}[!h]
+	%\begin{tabular}{>{\centering}m{6.7cm} c}
+	% Скалярная апостериорная матрица	& Диагональная апостериорная матрица \\ %\hline
+	%\end{tabular}
+	\vspace{-1mm}
+	\centering
+	\begin{subfigure}[!tp]{0.7\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/Train_test_score_unprunned_I_I.pdf}
+		\caption{Скалярная матрица.}
+		%		\caption{$L(\lambda)$, скалярная апостериорная матрица.}
+		\label{training_I_I}
+	\end{subfigure}
+	~
+	\hspace{-2mm}
+	\begin{subfigure}[!htbp]{0.7\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/Train_test_score_unprunned_D_I.pdf}
+		%		\caption{$L(\lambda)$, диагональная апостериорная матрица.}
+		\caption{Диагональная матрица.}
+		\label{training_D_I}
+	\end{subfigure}
+	\caption{Кривые обучения для скалярной и диагональной апостериорной матрицы ковариаций.}
+	\label{asdasd}
+\end{figure}
+
+
+
+На рис.~\ref{evidence_I_I} и~\ref{evidence_I_D} представлена зависимость оценки правдободобия $L$ \eqref{loss} от параметра $\lambda$.
+%Видно, что существует некоторое оптимальное значения $\lambda$, при котором оценка минимальна --- именно это значение $\lambda$ соответствует оптимальной модели.
+Для обоих случаев существует оптимальное значения $\lambda$, минимизирующее $L$; модели с таким параметром будут оптимальными. На рис.~\ref{score_I_I},~\ref{score_I_D},~\ref{portion_I_I} и~\ref{portion_I_D} отображены зависимости качества модели от $\lambda$ и доли выброшенных параметров. Видно, что даже при удалении большинства параметров из сети качество предсказаний меняется несущественно, что говорит об избыточном числе параметров исходной модели.
+
+\begin{figure}[!htp]
+	%\begin{tabular}{>{\centering}m{6.7cm} c}
+	% Скалярная апостериорная матрица	& Диагональная апостериорная матрица \\ %\hline
+	%\end{tabular}
+	\vspace{-1mm}
+	\centering
+	\begin{subfigure}[!tp]{0.45\textwidth}
+		\text{~~~~~~~~~~~~~Скалярная матрица}
+		\includegraphics[width=\textwidth]{Pictures/pruning_evidence_I_I.pdf}
+		\caption{}
+		%		\caption{$L(\lambda)$, скалярная апостериорная матрица.}
+		\label{evidence_I_I}
+	\end{subfigure}
+	\vspace{-1mm}
+	~
+	\hspace{-2mm}
+	\begin{subfigure}[!htbp]{0.45\textwidth}
+		\text{~~~~~~~~~~Диагональная матрица}
+		\includegraphics[width=\textwidth]{Pictures/pruning_evidence_D_I.pdf}
+		%		\caption{$L(\lambda)$, диагональная апостериорная матрица.}
+		\caption{}
+		\label{evidence_I_D}
+	\end{subfigure}
+	\newline
+	\vspace{-1mm}
+	\begin{subfigure}[!htbp]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/lambda_I_I.pdf}
+		%		\caption{F1-score($\lambda$), скалярная апостериорная матрица.}
+		\caption{}
+		\label{score_I_I}
+	\end{subfigure}
+	%	\hspace{1mm}
+	~
+	\begin{subfigure}[!htbp]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/lambda_D_I.pdf}
+		%		\caption{F1-score($\lambda$), диагональная апостериорная матрица.}
+		\caption{}
+		\label{score_I_D}
+	\end{subfigure}
+	\newline
+	%	~
+	\begin{subfigure}[!htbp]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/portion_I_I.pdf}
+		%		\caption{Зависимость качества от доли выброшенных параметров, скалярная апостериорная матрица.}
+		\caption{}
+		\label{portion_I_I}
+	\end{subfigure}
+	%	\hspace{3mm}
+	~
+	\begin{subfigure}[!htbp]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/portion_D_I.pdf}
+		%		\caption{Зависимость качества от доли выброшенных параметров, диагональная апостериорная матрица.}
+		\caption{}
+		\label{portion_I_D}
+	\end{subfigure}
+	\hspace{1mm}
+	\caption{Зависимость нижней оценки правдоподобия модели и F1-меры от $\lambda$ для скалярной и диагональной матриц ковариаций.}
+	\label{results}
+\end{figure}
+
+Из рис.~\ref{lambdas} видно, что при малых $\lambda$ из сети с диагональной апостериорной матрицей ковариаций удаляется больше весов, а при больших $\lambda$ --- меньше, что говорит о лучшем отборе параметров такой моделью.
+% Как показал вычислительный эксперимент, вариационная нейросеть, полученная методом, описанным в~\cite{Graves}, позволяет значительно улучшить качество предсказаний.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.75\textwidth]{Pictures/lambdas.pdf}
+	\caption{Доля неудалённых параметров сети в зависимости от порогового значения $\lambda$ для скалярного~($I$) и диагонального~($D$) вида апостериорной матрицы ковариаций}
+	\label{lambdas}
+\end{figure}
+
+В качестве иллюстративного примера удаления параметров на рисунках \ref{matrix_U} и \ref{matrix_W} изображены ненулевые параметры в матрицах $U$ и $W$ рекуррентной нейронной сети при $\lambda = 1$ и скалярной матрице ковариаций.
+
+\begin{figure}
+%	\vspace{-4cm}
+	\centering
+	\begin{subfigure}[ht!]{0.33\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/bits_U_pruned_I_ld_4.png}
+		%		\caption{Зависимость качества от доли выброшенных параметров, скалярная апостериорная матрица.}
+		\caption{}
+		\label{matrix_U}
+	\end{subfigure}
+	%	\hspace{3mm}
+	~
+	\begin{subfigure}[ht!]{0.33\textwidth}
+		\includegraphics[width=\textwidth]{Pictures/bits_W_pruned_I_ld_4.png}
+		%		\caption{Зависимость качества от доли выброшенных параметров, диагональная апостериорная матрица.}
+		\caption{}
+		\label{matrix_W}
+	\end{subfigure}
+	\hspace{1mm}
+	\caption{Неудалённые параметры в матрицах $U$ и $W$ рекуррентной нейросети при $\lambda=1$ в случае скалярной матрицы ковариаций.}
+	\label{matrix_U_W}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Заключение}
+С помощью вариационного байесовского подхода был построен набор моделей глубокого обучения с оптимальной нижней оценкой правдоподобия, отличающихся различными предположениями о виде априорного и апостериорного распределения параметров. Из случайности распределения параметров был получен критерий их удаления, что позволило увеличить нижнюю оценку правдободобия моделей. Как показала практика, диагональный вид матрицы ковариаций позволяет получить большее правдоподобие модели и более эффективно удалить наименее значимые параметры.
+Результаты полученных нейросетей в вычислительном эксперименте оказались близки к результатам других алгоритмов согласно критерию качества F1-меры.
+
+\newpage
+
+\begin{thebibliography}{99}
+	\bibitem{DeepGoogle}
+	\textit{Sutskever I., Vinyals\,O,  Le Q.\,V}. Sequence to sequence learning with neural networks~// Advances in Neural Information Processing Systems,~2014. P.~3104--3112. {\ttfamily https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-
+		with-neural-networks.pdf}
+	
+	\bibitem{Bishop}
+	\textit{Bishop~C.\,M}. Pattern Recognition and Machine Learning.~--- Springer,~2006.
+	
+	\bibitem{Strijov_1}
+	\textit{Kuznetsov~M.\,P., Tokmakova~A.\,A., Strijov~V.\,V.} Analytic and stochastic methods of structure parameter estimation~// Informatica,~2016. P.~607--624.
+	
+	\bibitem{Strijov_2}
+	\textit{Попова~М.\,С., Стрижов~В.\,В.} Выбор оптимальной модели классификации физической активности по измерениям акселерометра~// Информатика и её применения, 2015. Т.\,9.~Вып.~1. С.~76--86.
+	%	Informatics and Applications 2015, Volume 9, Issue 1, pp 76-86
+	
+	\bibitem{Sanborn}
+	\textit{Sanborn~A., Skryzalin~J.} 
+	Deep Learning for Semantic Similarity~// CS224d: Deep Learning for Natural Language Processing~--- Stanford, CA, USA: Stanford University,~2015. {\ttfamily https://cs224d.stanford.edu/reports/SanbornAdrian.pdf}
+	
+	\bibitem{GloVe}
+	\textit{Pennington~J., Socher~R.,  Manning~C.\,D.} Glove: Global vectors for word representation~// Proceedings of the Empiricial Methods in Natural Language Processing,~2014. Vol.~12. {\ttfamily https://nlp.stanford.edu/pubs/glove.pdf}
+	
+	\bibitem{word2vec}
+	\textit{Rong~X.} word2vec parameter learning explained~// Arxiv, 2014. {\ttfamily https://arxiv.org/abs/1411.2738}
+	%	{\ttfamily https://pdfs.semanticscholar.org/51b5/207c269a62f33442f7f25bf7f541f3ee53d8.pdf}
+	
+	\bibitem{Glo2vec}
+	\textit{Shi~T.,  Liu~Z.} Linking GloVe with word2vec~// Arxiv, 2014. {\ttfamily http://arxiv.org/abs/1411.5595 }
+	
+	\bibitem{fastText}
+	\textit{Zolotov~V., Kung~D.}  Analysis and optimization of fastText linear text classifier~// Arxiv, 2017.
+	{\ttfamily https://arxiv.org/ftp/arxiv/papers/1702/1702.05531.pdf}
+	%	https://pdfs.semanticscholar.org/9d69/93f60539d30ee325138b3465aa020fa3bcb4.pdf
+	
+	\bibitem{Graves}
+	%	\emph{Graves A.}
+	\textit{Graves~A.}
+	Practical variational inference for neural networks~// Advances in Neural Information Processing Systems~24, 2011. P.~2348--2356. {\ttfamily  http://papers.nips.cc/paper/4329-practical-variational-inference-for-
+		neural-networks.pdf}
+	
+	\bibitem{OBD}
+	\textit{Le Cun~Y., Denker~J.\,S., Solla~S.\,A.} Optimal Brain Damage~// Proceedings of NIPS-89, 1989. Vol.~2. P.~598--605. {\ttfamily https://papers.nips.cc/paper/250-optimal-brain-damage.pdf}
+	
+	\bibitem{OBS}
+	\textit{Hassibi~B., Stork~D.\,G., Wolff~G.\,J}. Optimal brain surgeon and general network pruning~// Neural Networks., IEEE International Conference on. --- IEEE, 1993. P.~293-299.
+	%	
+	%	\bibitem{MacKay}
+	%	\textit{MacKay~D.\,J.\,C.} Information theory, inference, and learning algorithms. --- Cambridge Univ Pr, 2003.
+	%	
+	%	\bibitem{Socher_1}
+	%	\textit{Socher~R., Huang~E.\,H., Pennington~J., Ng ~.\,Y., Manning~C.\,D.}
+	%	Dynamic pooling and unfolding recursive autoencoders for paraphrase detection~// Advances in Neural Information Processing Systems 24, 2011. P.~801--809.
+	%	{\ttfamily http://papers.nips.cc/book/advances-in-neural-information-processing-
+	%		systems-24-2011}
+	%	
+	%	\bibitem{Siamese}
+	%	\textit{Mueller~J., Thyagarajan~A.}  Siamese Recurrent Architectures for Learning Sentence Similarity~// AAAI, 2016. P. 2786--2792.
+	%
+	%	\bibitem{Socher_2}
+	%	\textit{Tai~K.\,S., Socher~R., Manning~C.\,D.} Improved semantic representations from tree-structured long short-term memory networks~// ACL (1), 2015. P.~1556--1566.
+	%		
+	%	\bibitem{GRU}
+	%	\textit{Chung~J., {\c C}aglar~G., Cho~K., Bengio~Y.}  Empirical evaluation of gated recurrent neural networks on sequence modeling~// Arxiv, 2014. {\ttfamily http://arxiv.org/abs/1412.3555}
+	%		
+	%	\bibitem{vanishing_grad}
+	%	\textit{Le~ P., Zuidema~W.} Quantifying the vanishing gradient and long distance
+	%	dependency problem in recursive neural networks and
+	%	recursive {LSTM}s~// Arxiv, 2016.   {\ttfamily http://arxiv.org/abs/1603.00423}
+	%		
+	%	\bibitem{Evidence}
+	%	\textit{Бахтеев~О.\,Ю.} Выбор модели глубокого обучения субоптимальной сложности с использованием вариационной оценки правдоподобия~// Интеллектуализация обработки информации ИОИ-2016, 2016. С. 16-17.
+	
+	\bibitem{SemEval2015}
+	Выборка пар предложений различной степени похожести. {\ttfamily  http://alt.qcri.org/semeval2015/task2/index.php?id=data-and-tools}
+	
+	%	\bibitem{sklearn}
+	%	http://scikit-learn.org/stable/
+	
+	\bibitem{code}
+	\textit{Смердов~А.\,Н.} Код вычислительного эксперимента. {\ttfamily 
+		https://sourceforge.net/p/
+		mlalgorithms/code/HEAD/tree/Group474/Smerdov2017Paraphrase/code/}
+	
+	\bibitem{GloveURL}
+	Библиотека Glove, python.
+	{\ttfamily https://github.com/stanfordnlp/GloVe}
+
+\end{thebibliography}
+
+\end{document}

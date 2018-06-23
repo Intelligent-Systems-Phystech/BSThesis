@@ -1,0 +1,205 @@
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{array}
+\usepackage{theorem}
+\usepackage{ifthen}
+\usepackage[ruled,section]{algorithm}
+\usepackage[noend]{algorithmic}
+\usepackage{graphicx}
+\usepackage{floatflt}
+\usepackage[footnotesize]{caption}
+\usepackage{color}
+\usepackage[all]{xy}
+
+% ��������� ��������
+\textheight=24cm
+\textwidth=16cm
+\oddsidemargin=0mm
+\topmargin=-1cm
+\parindent=24pt
+\tolerance=500
+\footnotesep=3ex
+\flushbottom
+\tolerance=3000
+\renewcommand{\baselinestretch}{1.4} %��� ������ � ������� ����������
+
+% ��������� ���� ������
+\theorembodyfont{\rmfamily\slshape}
+\theoremstyle{plain}
+\newtheorem{Theorem}{�������}[section]
+\newtheorem{Corollary}{���������}[Theorem]
+\newtheorem{Lemma}{�����}[section]
+\newtheorem{Def}{�����������}[section]
+\newtheorem{State}{�����������}[section]
+\newtheorem{Hypothesis}{��������}[section]
+\theorembodyfont{\rmfamily}
+\newtheorem{Example}{������}[section]
+\newtheorem{Heuristic}{���������}
+\newtheorem{Remark}{���������}[section]
+% ��������� ������ � ������, ����� ������� ����� ����� ������ �������
+\gdef\th@plain{\normalfont
+    \def\@begintheorem##1##2{%
+        \item[\hskip\labelsep\theorem@headerfont ##1\ ##2.\;]}%
+    \def\@opargbegintheorem##1##2##3{%
+        \item[\hskip\labelsep\theorem@headerfont ##1\ ##2 (##3).\;]}%
+}
+
+\newenvironment{Proof}%
+    {\par\noindent{\bf ��������������.\par\nopagebreak}}%
+    {\hfill$\scriptstyle\blacksquare$}
+
+% �������� ������� ��� ������
+\renewcommand{\em}{\it}  % ����� \em � \emph ������ ������ ������
+\renewcommand\emph[1]{\textit{#1}}
+% ������� ����� �������� �� ��������� ������
+\def\brop#1{#1\discretionary{}{\hbox{$#1$}}{}}
+
+% �������� ������� ��� ����������
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+\newcommand{\ophi}{\phi}
+\renewcommand{\phi}{\varphi}
+\newcommand{\const}{\mathrm{const}}
+\newcommand{\emset}{\varnothing}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\wtil}{\widetilde}
+\newcommand{\kapa}{\varkappa}
+\newcommand{\argmin}{\mathop{\rm arg\,min}\limits}
+\newcommand{\argmax}{\mathop{\rm arg\,max}\limits}
+\newcommand{\sign}{\mathop{\rm sign}\limits}
+
+% ������
+\def\RR{\mathbb{R}}
+%\def\DD{\mathbb{D}}
+\def\fF{\mathfrak{F}}
+\def\fI{\mathfrak{I}}
+\def\fM{\mathfrak{M}}
+
+% ������ ������������
+\newcommand{\erf}{\myop{erf}}
+\newcommand{\Expect}{\mathsf{E}}
+\newcommand{\Var}{\mathsf{D}}
+\newcommand\Normal{\mathcal{N}}
+\newcommand{\cond}{\mspace{3mu}{|}\mspace{3mu}}
+
+% ��������� ��������� ����� � ��������
+\newenvironment{network}%
+    {\begin{xy}<0.9ex,0ex>:}%
+    {\end{xy}}
+\def\nnNode[#1](#2)#3{\POS(#2)*#3="#1"}
+\def\nnLink[#1,#2]#3{\POS"#1"\ar #3 "#2"}
+
+%% ����������� ���������� ���������� � ������� algorithm, algorithmic
+%%\definecolor{KwColor}{rgb}{0,0,0.9}
+%%\newcommand{\algKeyword}[1]{\textbf{\color{KwColor} #1}}
+%\newcommand{\algKeyword}[1]{\textbf{#1}}
+%\renewcommand{\algorithmicrequire}{\rule{0pt}{2.5ex}\algKeyword{����:}}
+%\renewcommand{\algorithmicensure}{\algKeyword{�����:}}
+%\renewcommand{\algorithmicend}{\algKeyword{�����}}
+%\renewcommand{\algorithmicif}{\algKeyword{����}}
+%\renewcommand{\algorithmicthen}{\algKeyword{��}}
+%\renewcommand{\algorithmicelse}{\algKeyword{�����}}
+%\renewcommand{\algorithmicelsif}{\algorithmicelse\ \algorithmicif}
+%\renewcommand{\algorithmicendif}{\algorithmicend\ \algorithmicif}
+%\renewcommand{\algorithmicfor}{\algKeyword{���}}
+%\renewcommand{\algorithmicforall}{\algKeyword{��� ����}}
+%\renewcommand{\algorithmicdo}{}
+%\renewcommand{\algorithmicendfor}{\algorithmicend\ \algorithmicfor}
+%\renewcommand{\algorithmicwhile}{\algKeyword{����}}
+%\renewcommand{\algorithmicendwhile}{\algorithmicend\ \algorithmicwhile}
+%\renewcommand{\algorithmicloop}{\algKeyword{����}}
+%\renewcommand{\algorithmicendloop}{\algorithmicend\ \algorithmicloop}
+%\renewcommand{\algorithmicrepeat}{\algKeyword{���������}}
+%\renewcommand{\algorithmicuntil}{\algKeyword{����}}
+%\renewcommand{\algorithmiccomment}[1]{{\footnotesize // #1}}
+%\renewcommand{\algorithmiccomment}[1]{{\quad--- #1}}
+%\renewcommand{\listalgorithmname}{������ ����������}
+% ��� �������������� ������� ��� �������� ����������
+%\newcommand{\BEGIN}{\\[1ex]\hrule\vskip 1ex}
+%\newcommand{\PARAMS}{\renewcommand{\algorithmicrequire}{\algKeyword{���������:}}\REQUIRE}
+%\newcommand{\END}{\vskip 1ex\hrule\vskip 1ex}
+%\newcommand{\vkReturn}{\algKeyword{�������} }
+%\newcommand{\RET}{\STATE\vkReturn}
+%\newcommand{\EXIT}{\STATE\algKeyword{�����}}
+%\newcommand{\CONTINUE}{\STATE\algKeyword{���������} }
+%\newcommand{\IFTHEN}[1]{\STATE\algorithmicif\ #1 {\algorithmicthen}}
+%\newcommand{\vkProcedure}[1]{{\tt #1}}
+%\newcommand{\vkProc}[1]{\text{\tt #1}}
+%\newcommand{\PROCEDURE}[1]{\medskip\STATE\algKeyword{���������} \vkProcedure{#1}}
+%\floatname{algorithm}{��������}
+%\floatplacement{algorithm}{!t}
+% ����� ��������� ������� ����� ������ ��������� � \caption:
+%\renewcommand\floatc@ruled[2]{\vskip2pt{\@fs@cfont #1.} #2\par}
+
+
+
+
+
+
+
+
+% ��������������� ������������
+\def\MYheadfoot{
+\renewcommand{\@oddfoot}{}
+\renewcommand{\@oddhead}{\hfil-- \thepage\ --\hfil}
+\renewcommand{\@evenfoot}{}
+\renewcommand{\@evenhead}{\hfil-- \thepage\ --\hfil}
+} \MYheadfoot
+
+% ��������� ������ ������������ ��������
+\@addtoreset{equation}{section}
+\def\theequation{\thesection.\arabic{equation}}
+
+% ����� ����������
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+    {3.5ex \@plus 1ex \@minus .2ex}%
+    {2.3ex \@plus.2ex}%
+    {\normalfont\Large\sffamily\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+    {3.25ex\@plus 1ex \@minus .2ex}%
+    {1.5ex \@plus .2ex}%
+    {\normalfont\large\sffamily\bfseries}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+    {3.25ex\@plus 1ex \@minus .2ex}%
+    {1.5ex \@plus .2ex}%
+    {\normalfont\normalsize\sffamily\bfseries}}
+
+% ��������� �����������
+\setcounter{topnumber}{9}
+\setcounter{totalnumber}{9}
+\renewcommand\topfraction{1.0}
+\renewcommand\textfraction{0.0}  % ����� ����������� �� ������� � ����� ���������
+\renewcommand\floatpagefraction{0.01} % float-������� ���� ������ �� ������ - ��� ����� �� ����� ������ ;)
+\setlength\floatsep{2ex}
+\setlength\textfloatsep{2.5ex}
+\setlength\intextsep{2.5ex}
+\setlength\abovecaptionskip{2ex}
+
+% ������������ �������� �� ��������
+\def\afterlabel#1{\renewcommand\labelenumi{\theenumi #1}}
+\def\aroundlabel#1#2{\renewcommand\labelenumi{#1\theenumi #2}}
+\newenvironment{enumerate*}
+{%
+    \begingroup
+    \renewcommand{\@listi}{%
+        \topsep=\smallskipamount % ������ ������
+        \parsep=0pt% ����� �������� ������ ������
+        \parskip=0pt% ����� ��������
+        \itemsep=0pt% ����� ��������
+        \itemindent=0pt% �������� ������
+        \labelsep=1.5ex% ���������� �� �����
+        \leftmargin=24pt% ������ �����
+        \rightmargin=0pt} % ������ ������
+    \begin{enumerate}%
+    \afterlabel)%
+}{%
+    \end{enumerate}%
+    \endgroup
+}
+
+% ��� ������: ��������� ������������ ������� ������� ��������� ���������
+\newcommand{\hstrut}{\rule{0pt}{2.5ex}}
+\newcommand{\headline}{\hline\hstrut}
