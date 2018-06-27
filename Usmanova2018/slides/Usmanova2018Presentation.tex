@@ -1,0 +1,388 @@
+\documentclass{beamer}
+\usepackage[cp1251]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,mathrsfs,mathtext}
+\usepackage{graphicx, epsfig}
+\usetheme{Warsaw}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
+\usecolortheme{sidebartab}
+\usepackage{bbm}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\definecolor{beamer@blendedblue}{RGB}{95, 0, 60}
+
+\newcommand{\bE}{\mathbf{E}}
+\newcommand{\bF}{\mathbf{F}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bQ}{\mathbf{Q}}
+\newcommand{\bT}{\mathbf{T}}
+\newcommand{\bR}{\mathbf{R}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bZ}{\bold{Z}}
+
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bp}{\mathbf{p}}
+\newcommand{\bq}{\mathbf{q}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\bz}{\bold{z}}
+
+\newcommand{\bV}{\bold{V}}
+\newcommand{\bU}{\bold{U}}
+\newcommand{\bLambda}{\mathbf{\Lambda}}
+\newcommand{\bTheta}{\mathbf{\Theta}}
+\newcommand{\cT}{\mathcal{T}}
+
+
+
+
+%----------------------------------------------------------------------------------------------------------
+\title[\hbox to 56mm{Связи между временными рядами\hfill\insertframenumber\,/\,\inserttotalframenumber}]
+{Модели обнаружения связей между временными 
+рядами в задачах прогнозирования}
+\author[К.\,Р. Усманова]{\large \\Карина Равилевна Усманова}
+\institute{\tiny
+	Московский физико-технический институт\\
+	Физтех-школа прикладной математики и информатики\\
+	Факультет управления и прикладной математики\\
+	Кафедра <<Интеллектуальные системы>>}
+
+\date{\footnotesize{Научный руководитель: д.ф.-м.н. В.В.Стрижов}\\\vspace{\baselineskip}Выпускная квалификационная работа бакалавра\\\vspace{\baselineskip}Москва 2018}
+%----------------------------------------------------------------------------------------------------------
+\begin{document}
+%----------------------------------------------------------------------------------------------------------
+\begin{frame}
+%\thispagestyle{empty}
+\titlepage
+\end{frame}
+
+%-----------------------------------------------------------------------------------------------------
+\begin{frame}{Обнаружение связей во временных рядах}
+
+\begin{block}{\bf Задача}
+Повысить качество прогноза временного ряда путем учета экзогенных факторов. 
+Установить связи между временными рядами, с целью их включения в прогностическую модель.
+\end{block}
+
+\begin{block}{\bf Предлагается}
+Использовать метод сходящегося перекрестного отображения (CCM).
+Считается, что два ряда связаны, если существуют их траекторные подпространства, проекции в которые связаны.
+
+\end{block}
+
+\begin{block}{\bf Решение}
+Проекции связаны, если окрестность фазовой траектории одного ряда отображается в окрестность фазовой траектории другого ряда. 
+Отыскать траекторные подпространства, обнаруживающие эту связь.
+
+\end{block}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Литература}
+\begin{itemize}
+\item Sugihara G., May R., Ye H., Hsieh C., Deyle E., Fogarty M., and Munch S // Detecting causality in complex ecosystems. 2012.
+
+\item  Sugihara G., May R. Nonlinear forecasting as a way of distinguishing chaos from measurement error in time series // Nature. 1990.
+
+\item Motrenko A. and Strijov V. Extracting fundamental periods to segment biomedical signals. 2015.
+
+\item Golyandina N. and Stepanov D. SSA-based approaches to analysis and forecast of multidimensional time series // 5th St. Petersburg workshop on simulation. 2005.
+\end{itemize}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Постановка задачи обнаружения связи}
+Для временных рядов $\bx = [x_1, \ldots, x_N]$ и $\by = [y_1, \ldots, y_N]$ 	установить наличие связи между ними.
+
+\begin{block}{\bf Решение}
+Считаем, что ряд $\by$ зависит от ряда $\bx$, если существует липшицево отображение $\varphi : \mathbb{H}_{\bx} \to \mathbb{H}_{\by}:$
+
+$$\rho_{\mathbb{H}_{\by}}\Bigl(\varphi(\bx_i), \varphi(\bx_j)\Bigl) \leq L\cdot \rho_{\mathbb{H}_{\bx}}(\bx_i, \bx_j), \quad \text{для } \bx_i, \bx_j \in \mathbb{H}_{\bx}.$$
+\end{block}
+Траекторная матрица:
+$$\bH_{\bx} = \left[\begin{matrix}
+x_1 & \ldots & x_{L - 1} & x_{L} \\ 
+x_2 & \ldots & x_{L} & x_{L + 1} \\ 
+\vdots & \vdots  & \vdots & \vdots\\ 
+x_{N - L + 1} & \ldots & x_{N - 1} & x_{N}  \\ 
+\end{matrix}\right] = \left[\begin{matrix}
+\bx_{L} \\ \bx_{L + 1} \\ \vdots \\ \bx_{N}
+\end{matrix}\right],$$
+где $L$ -- ширина окна, $\bx_{i} = \left[x_{i - L + 1}, \ldots, x_{i - 1}, x_{i}\right] \in \mathbb{H}_{\bx},  \quad$ \mbox{$\mathbb{H}_{\bx}$ -- траекторное пространство.}
+
+
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Построение сходящегося перекрестного отображения}
+
+\vspace{-2mm}
+
+\begin{block}{}
+\begin{itemize}
+\item Выбираем $\bx_{t^*} = \left[x_{t^* - L + 1}, \ldots, x_{t^* - 1}, x_{t^*} \right]$. 
+\item Пусть $\bx_{t_1}, \ldots, \bx_{t_k}$ -- $k$ ближайших соседей вектора $\bx_{t^*}$ в пространстве $\mathbb{H}_{\bx}$. 
+Тогда $\by_{t^*}, \by_{t_1}, \ldots, \by_{t_k}$ -- строки матрицы $\bH_{\by}$, соответствующие индексам $t_1, \ldots, t_k$.
+\end{itemize}
+\end{block}
+
+
+\vspace{-2mm}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.48]{pictures/ccm_diagram.pdf}
+\end{center}
+\end{figure}
+
+
+\vspace{-2mm}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.48]{pictures/ccm_diagram_not_connected.pdf}
+\end{center}
+\end{figure}
+
+\end{frame}
+ 
+
+%----------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Выбор оптимальных траекторных подпространств}
+\vspace{-2.5mm}
+\begin{block}{Анализ собственных подпространств}
+\begin{itemize}
+
+\item Построим сингулярное разложение траекторной матрицы
+$\bH_{\bx} = \bU_{\bx}\bLambda_{\bx}\bV_{\bx}$.
+
+\item Выберем $\cT_{\bx}$ -- некоторый набор индексов компонент ряда $\bx$
+\item Построим $\mathbb{H}_{\mathcal{T}_{\bx}} \subset \mathbb{H}_{\bx}$-- траекторное подпространство
+\item Проекция ряда $\bx$ в подпространство $\mathbb{H}_{\mathcal{T}_{\bx}}$,  описывается траекторной матрицей
+$\bP_{\cT_{\bx}} = \bU_{\bx}\tilde{\bLambda}_{\bx}\bV_{\bx}$.
+
+\end{itemize}
+\end{block}
+
+\vspace{-2.5mm}
+\begin{block}{}
+Задача поиска подпространств $\mathbb{H}_{\cT_{\bx}}$ и $\mathbb{H}_{\cT_{\by}}$ эквивалентна поиску номеров главных компонент $\left(\cT_{\bx}, \cT_{\by} \right)$ 
+\vspace{-2mm}
+$$S(\bx, \by, \mathcal{T}_{\bx}, \mathcal{T}_{\by}) = \dfrac{\text{dist}(\bx, \mathcal{T}_{\bx})}{\text{dist}(\by, \mathcal{T}_{\by})} \cdot \dfrac{|\cT_{\by}|}{|\cT_{\bx}|}, \quad 
+\text{dist}(\bx, \mathcal{T}_{\bx}) = \frac{1}{k}\sum_{i = 1}^{k}{||\bx_{t^*} - \bx_{t_i}||_2}$$
+\vspace{-4mm}
+$$\left(\cT_{\bx}, \cT_{\by} \right) = \text{arg}\max_{\cT_{\bx}, \cT_{\bx}}S(\bx, \by, \mathcal{T}_{\bx}, \mathcal{T}_{\by})$$
+%$$,  \quad |\cT_{\bx}|, |\cT_{\by}|, \Big||\cT_{\bx}| - |\cT_{\by}|\Big| \to \min $$
+\vspace{-1mm}
+Если~$S\left(\bx, \by, \cT_{\bx}, \cT_{\by} \right)$ больше некоторого порога~$s$, то ряд~$\by$ зависит от ряда~$\bx$.
+\end{block}
+
+
+\end{frame}
+
+%---------------------------------------------------------------------
+
+\begin{frame}{Эксперимент на искусственных данных}
+Эксперимент проводился на двух зашумленных синусах с разным периодом.
+
+$$\bx = \sin t + 2\sin\frac{t}{2} + \sigma^2_x\mathbf{\varepsilon}, \quad \sigma^2_x = 0.3, \quad \mathbf{\varepsilon} \in \mathcal{N}(\bold{0}, \bI)$$
+$$\by = \sin(2t + 5) + \sigma^2_y\mathbf{\varepsilon}, \quad \sigma^2_y = 0.25, \quad \mathbf{\varepsilon} \in \mathcal{N}(\bold{0}, \bI)$$
+
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.32]{pictures/generated_data/init_ts.eps}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+%-----------------------------------------------------------------------
+
+\begin{frame}{Ближайшие соседи на фазовых траекториях}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.23]{pictures/generated_data/phase_tr_by_X.eps}
+\end{center}
+\end{figure}
+
+
+\begin{figure}
+\begin{center} 
+\includegraphics[scale=0.23]{pictures/generated_data/phase_tr_by_Y.eps}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+%---------------------------------------------------------------------
+
+\begin{frame}{Найденные ближайшие соседи}
+Для $t^* = 15$ найдем ближайших соседей векторов $\bx_{t^*}$ и $\by_{t^*} $ в траекторных пространствах $\mathbb{H}_{\bx}$ и $\mathbb{H}_{\by}$. Изобразим соответствующие им моменты времени на рядах $\bx$  и $\by$.
+
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.23]{pictures/generated_data/X_sin_knn.eps}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.23]{pictures/generated_data/Y_sin_knn.eps}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+
+%-----------------------------------------------------------------------
+\begin{frame}{Эксперимент на данных потребления электроэнергии}
+\begin{itemize}
+\item Эксперимент проводился на данных потребления электроэнергии $\bx$ и температуры $\by$ в течение года.
+
+\item Для приведения ряда температуры к стационарной форме используется ряд длины светового дня $\bz$.
+
+\item Нормированные ряды потребления электроэнергии, температуры и длины светового дня:
+\end{itemize}
+ 
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.3]{pictures/energy_temp/energy_temp_daylen_ts.eps}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+%-----------------------------------------------------------------------
+\begin{frame}{Кросс-корреляция температуры и длины светового дня}
+Найдем сдвиг $h$ рядя длины светового дня $\bz$ относительно ряда температуры $\by$. 
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.3]{pictures/energy_temp/cross_corr_diagram.eps}
+\end{center} 
+\end{figure}
+\vspace{-2mm}
+Максимум кросс-корреляции достигается при $h = 560$. Ряд температуры, приведенный к стационарной форме имеет вид:
+$$\by(t) := \by(t) - \bz(t - 560)$$
+
+
+\end{frame}
+
+
+%-----------------------------------------------------------------------
+
+%-----------------------------------------------------------------------
+\begin{frame}{Ближайшие соседи на фазовых траекториях}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.23]{pictures/energy_temp/by_X_L170_12.eps}
+\end{center}
+\end{figure}
+
+\vspace{-4mm}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.23]{pictures/energy_temp/by_Y_L170_12.eps}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+%--------------------------------------------------------------------
+
+\begin{frame}{Решение задачи выбора траекторных подпространств}
+Рассмотрим различные подпространства $\mathbb{H}_{\bx}$ и $\mathbb{H}_{\by}$. Для каждой пары компонент $\left(\mathcal{T}_{\bx}, \mathcal{T}_{\by}\right)$ найдем значение $S(\bx, \by, \mathcal{T}_{\bx}, \mathcal{T}_{\by})$
+\vspace{-2mm}
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.3]{pictures/energy_temp/3d_comps_by_X.eps}
+\end{center}
+\end{figure}
+
+\vspace{-6mm}
+Оптимальные подпространства задаются номерами компонент $\mathcal{T}_{\bx} = \{0, 3\}, \quad \mathcal{T}_{\by} = \{0, 2\}$
+\end{frame}
+
+
+%--------------------------------------------------------------------
+
+\begin{frame}{Построение прогноза}
+\begin{itemize}
+\item Сравним качество прогноза ряда $\bx$ только по собственной истории с качеством прогноза, использующим историю ряда $\by$.
+\item Построим прогноз с использованием первых главных компонент ряда $\by$
+\end{itemize}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.3]{pictures/energy_temp/forecast_error_diff_Y_comps_5_10.eps}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+
+%--------------------------------------------------------------------
+
+\begin{frame}{Результаты}
+
+\begin{block}{}
+\begin{itemize}
+\item Предложен способ обнаружения связи между компонентами временных рядов.
+\item Проведен вычислительный эксперимент по обнаружению связи между искусственными временными рядами. 
+\item С помощью метода CCM исследованы связи между рядами потребления электроэнергии и температуры.
+\item Исследована связь между проекциями этих рядов в различные подпространства.
+\end{itemize}
+\end{block}
+
+\begin{block}{\bf Публикация ВАК}
+К. Р. Усманова, С. П. Кудияров, Р. В. Мартышкин,
+А. А. Замковой, В. В. Стрижов. 
+Анализ зависимостей между показателями при прогнозировании объема грузоперевозок // Системы и средства информатики, 2018.
+\end{block}
+
+
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document} 
